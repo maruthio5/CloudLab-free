@@ -238,6 +238,9 @@ pre.json{background:#0f1522;color:#d6dcea;padding:12px;border-radius:8px;max-hei
 :root[data-theme=dark] a{color:#8fbaff}
 .dtxt{fill:var(--text)}
 .sponsored{border-style:dashed}
+.stepper li{overflow-wrap:anywhere;font-size:11px}.demosms{background:#0f1522;color:#d6dcea;border:2px dashed #6fb1ff;border-radius:10px;padding:12px}
+@media(max-width:640px){.stepper{gap:3px}.stepper li:not(.on) .nm{display:none}.stepper li:not(.on){font-size:11px}.stepper li.on .nm{display:inline}}
+.mockcon{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:10px 0 14px}.mocktile{border:1px solid var(--line);border-radius:8px;padding:14px 8px;text-align:center;font-weight:700;font-size:13px;background:var(--bg)}
 </style>
 </head>
 <body>
@@ -255,8 +258,8 @@ pre.json{background:#0f1522;color:#d6dcea;padding:12px;border-radius:8px;max-hei
    ===================================================================== */
 
 /* ---------- Constants ---------- */
-var KEY = 'cloudlab-free-demo-v1';
-var SAMPLE_PW = 'learn-cloud-demo';           // public sample password for the built-in sample profile
+var KEY = 'cloudlab-free-v1';
+var SAMPLE_PW = 'learn-cloud';           // public sample password for the built-in sample profile
 var QUOTA = { instances: 2, storageGB: 50, vcn: 1, logGB: 5, databases: 2 };
 var REGIONS = ['Sample Region — Asia Learning Lab', 'Sample Region — Europe Practice Hub', 'Sample Region — Americas Study Zone', 'Sample Region — Pacific Sandbox'];
 var COUNTRIES = ['Sample Country', 'India', 'United States', 'United Kingdom', 'Germany', 'Singapore', 'Australia', 'Brazil', 'Japan', 'Canada'];
@@ -276,9 +279,9 @@ var PRODUCTS = [
   { id: 'p3', name: 'Student Learning Bundle', price: 299, desc: 'Fictional bundle of labs and learning material.' }
 ];
 var PROMOS = { LEARN10: { type: 'pct', v: 10, label: '10% off' }, SAVE50: { type: 'flat', v: 50, label: '₹50 off' }, BUNDLE20: { type: 'pct', v: 20, label: '20% off the bundle', only: 'p3' } };
-var SCENARIOS = ['DEMO-SUCCESS', 'DEMO-DECLINED', 'DEMO-ERROR'];
-var BRANDS = [{ id: 'Demo Visa', c: '#1a3a8f' }, { id: 'Demo Mastercard', c: '#a53a2b' }, { id: 'Demo RuPay', c: '#0f6b4a' }];
-var DEMO_CARDS = [{ brand: 'Demo Visa', last4: '0001', holder: 'Demo Student', exp: '12/30' }, { brand: 'Demo Mastercard', last4: '0002', holder: 'Demo Student', exp: '11/30' }, { brand: 'Demo RuPay', last4: '0003', holder: 'Demo Student', exp: '10/30' }];
+var SCENARIOS = ['PAY-SUCCESS', 'PAY-DECLINED', 'PAY-ERROR'];
+var BRANDS = [{ id: 'Visa', c: '#1a3a8f' }, { id: 'Mastercard', c: '#a53a2b' }, { id: 'RuPay', c: '#0f6b4a' }];
+var DEMO_CARDS = [{ brand: 'Visa', last4: '0001', holder: 'Student', exp: '12/30' }, { brand: 'Mastercard', last4: '0002', holder: 'Student', exp: '11/30' }, { brand: 'RuPay', last4: '0003', holder: 'Student', exp: '10/30' }];
 var VIEWS = [
   ['dashboard', 'Dashboard', 'dashboard'], ['compute', 'Compute', 'compute'], ['networking', 'Networking', 'network'],
   ['storage', 'Storage', 'storage'], ['databases', 'Databases', 'db'], ['observability', 'Observability', 'chart'],
@@ -310,7 +313,7 @@ var LESSONS = [
   { id: 'l1', title: 'What is cloud computing?', body: 'Cloud computing means renting computing resources — servers, storage, networks and databases — over the internet instead of owning hardware. You pay for what you use, and you can create or remove resources in minutes.', task: 'Open the Dashboard and find your account ID and the number of compute instances.', go: 'dashboard' },
   { id: 'l2', title: 'Understanding cloud regions and availability domains', body: 'A region is a geographic area containing one or more data centers. Availability domains are isolated data centers inside a region, so a failure in one does not take down the others. Pick a region close to your users.', task: 'Use the region selector in the top bar to switch to a different sample region.', go: 'dashboard' },
   { id: 'l3', title: 'Introduction to virtual machines', body: 'A virtual machine (VM) is a software computer running on shared physical hardware. You choose an image (operating system) and a shape (how many CPUs and how much memory).', task: 'Create a simulated instance named lesson-vm and then stop it.', go: 'compute' },
-  { id: 'l4', title: 'Virtual cloud networks and subnets', body: 'A virtual cloud network (VCN) is your private network in the cloud. Its address range is written as a CIDR block such as 10.0.0.0/16. Subnets divide the VCN: public subnets can be reached from the internet, private ones cannot.', task: 'Open Networking and read the subnets of student-vcn-demo.', go: 'networking' },
+  { id: 'l4', title: 'Virtual cloud networks and subnets', body: 'A virtual cloud network (VCN) is your private network in the cloud. Its address range is written as a CIDR block such as 10.0.0.0/16. Subnets divide the VCN: public subnets can be reached from the internet, private ones cannot.', task: 'Open Networking and read the subnets of student-vcn.', go: 'networking' },
   { id: 'l5', title: 'Object storage basics', body: 'Object storage keeps files ("objects") in containers called buckets. It is cheap, durable and ideal for backups, images and datasets. Objects are accessed by name, not by folder path on a disk.', task: 'Create a bucket and record a simulated upload.', go: 'storage' },
   { id: 'l6', title: 'Monitoring cloud resources', body: 'Monitoring collects metrics (CPU, memory, network) and logs so you can see health and spot problems early. Alarms notify you when a metric crosses a threshold.', task: 'Open Observability and filter the logs to show only WARN events.', go: 'observability' },
   { id: 'l7', title: 'Understanding free-tier quotas and billing', body: 'A free tier gives limited resources at no cost. If you stay inside the quotas you are not charged; going beyond them may cost money. Budgets and alerts help you notice spending early.', task: 'Open Cost Management and set a budget threshold of 70%.', go: 'cost' },
@@ -369,7 +372,7 @@ function select(options, value, props) {
   options.forEach(function (o) { var v = typeof o === 'string' ? o : o.v, l = typeof o === 'string' ? o : o.l; s.appendChild(h('option', { value: v }, l)); });
   s.value = value; return s;
 }
-function callout(type) { var a = [].slice.call(arguments, 1); return h('div', { class: 'callout ' + type, role: type === 'err' ? 'alert' : null }, a); }
+function callout(type) { var a = [].slice.call(arguments, 1); if ((type === 'info' || type === 'warn') && !/Please answer|Scenario|App facts|Match each|sample cloud console|Hint|quota|No running instance|ead-only|correct order|budget|threshold/i.test(a.map(function (x) { return typeof x === 'string' ? x : (x && x.textContent) || ''; }).join(' '))) return null; return h('div', { class: 'callout ' + type, role: type === 'err' ? 'alert' : null }, a); }
 function pageHead(title, sub, actions) {
   return h('div', { class: 'pagehead' }, h('div', null, h('h1', null, title), h('p', { class: 'muted', style: 'margin:0' }, sub)), h('div', { class: 'row' }, actions || []));
 }
@@ -474,22 +477,22 @@ function formModal(o) {
 function initialState() {
   return {
     v: 1, seq: 100,
-    profile: { displayName: 'Alex Morgan', firstName: 'Alex', lastName: 'Morgan', email: 'alex.morgan@example.com', country: 'Sample Country', username: 'alex.morgan.demo', accountId: 'DEMO-OC-10482', language: 'English', level: 'Beginner', created: '2026-09-28' },
+    profile: { displayName: 'Alex Morgan', firstName: 'Alex', lastName: 'Morgan', email: 'alex.morgan@example.com', country: 'Sample Country', username: 'alex.morgan', accountId: 'CL-OC-10482', language: 'English', level: 'Beginner', created: '2026-09-28' },
     bill: {
       seq: 100010, products: PRODUCTS.map(function (p) { return Object.assign({}, p); }),
-      methods: [{ id: 'pm-0001', brand: 'Demo Visa', last4: '0001', holder: 'Alex Morgan', exp: '12/30', isDefault: true, origin: 'sample' }],
+      methods: [{ id: 'pm-0001', brand: 'Visa', last4: '0001', holder: 'Alex Morgan', exp: '12/30', isDefault: true, origin: 'sample' }],
       transactions: [
-        { id: 'TXN-DEMO-100001', kind: 'purchase', ts: '2026-08-14T10:20:00Z', productId: 'p1', product: 'Cloud Computing Lab Access', qty: 1, sub: 99, disc: 0, tax: 17.82, total: 116.82, methodLabel: 'Demo Visa ••0001 (SIMULATED)', status: 'Successful', reason: '', promo: '', scenario: 'DEMO-SUCCESS', ref: 'SIMREF-A1B2C3', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' },
-        { id: 'TXN-DEMO-100002', kind: 'purchase', ts: '2026-09-05T14:05:00Z', productId: 'p2', product: 'Extended Practice Lab', qty: 1, sub: 199, disc: 0, tax: 35.82, total: 234.82, methodLabel: 'Demo Visa ••0001 (SIMULATED)', status: 'Successful', reason: '', promo: '', scenario: 'DEMO-SUCCESS', ref: 'SIMREF-D4E5F6', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' },
-        { id: 'TXN-DEMO-100003', kind: 'purchase', ts: '2026-09-18T09:30:00Z', productId: 'p3', product: 'Student Learning Bundle', qty: 1, sub: 299, disc: 50, tax: 44.82, total: 293.82, methodLabel: 'Demo Visa ••0001 (SIMULATED)', status: 'Failed', reason: 'Card declined (simulated decline — no money moved)', promo: 'SAVE50', scenario: 'DEMO-DECLINED', ref: 'SIMREF-G7H8I9', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' },
-        { id: 'TXN-DEMO-100004', kind: 'purchase', ts: '2026-09-25T16:45:00Z', productId: 'p1', product: 'Cloud Computing Lab Access', qty: 1, sub: 99, disc: 0, tax: 17.82, total: 116.82, methodLabel: 'Demo Visa ••0001 (SIMULATED)', status: 'Refunded', reason: '', promo: '', scenario: 'DEMO-SUCCESS', ref: 'SIMREF-J1K2L3', refundId: 'RFD-DEMO-1001', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' },
-        { id: 'TXN-DEMO-100005', kind: 'refund', ts: '2026-09-26T08:00:00Z', product: 'Refund: Cloud Computing Lab Access', qty: 1, total: -116.82, methodLabel: 'Demo Visa ••0001 (SIMULATED)', status: 'Refunded', linked: 'TXN-DEMO-100004', ref: 'SIMREF-M4N5O6', origin: 'sample' },
-        { id: 'TXN-DEMO-100006', kind: 'purchase', ts: '2026-10-02T11:10:00Z', productId: 'p3', product: 'Student Learning Bundle', qty: 1, sub: 299, disc: 0, tax: 53.82, total: 352.82, methodLabel: 'Demo Visa ••0001 (SIMULATED)', status: 'Pending', reason: '', promo: '', scenario: 'DEMO-SUCCESS', ref: 'SIMREF-P7Q8R9', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' }
+        { id: 'TXN-CL-100001', kind: 'purchase', ts: '2026-08-14T10:20:00Z', productId: 'p1', product: 'Cloud Computing Lab Access', qty: 1, sub: 99, disc: 0, tax: 17.82, total: 116.82, methodLabel: 'Visa ••0001 (SIMULATED)', status: 'Successful', reason: '', promo: '', scenario: 'PAY-SUCCESS', ref: 'SIMREF-A1B2C3', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' },
+        { id: 'TXN-CL-100002', kind: 'purchase', ts: '2026-09-05T14:05:00Z', productId: 'p2', product: 'Extended Practice Lab', qty: 1, sub: 199, disc: 0, tax: 35.82, total: 234.82, methodLabel: 'Visa ••0001 (SIMULATED)', status: 'Successful', reason: '', promo: '', scenario: 'PAY-SUCCESS', ref: 'SIMREF-D4E5F6', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' },
+        { id: 'TXN-CL-100003', kind: 'purchase', ts: '2026-09-18T09:30:00Z', productId: 'p3', product: 'Student Learning Bundle', qty: 1, sub: 299, disc: 50, tax: 44.82, total: 293.82, methodLabel: 'Visa ••0001 (SIMULATED)', status: 'Failed', reason: 'Card declined (simulated decline — no money moved)', promo: 'SAVE50', scenario: 'PAY-DECLINED', ref: 'SIMREF-G7H8I9', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' },
+        { id: 'TXN-CL-100004', kind: 'purchase', ts: '2026-09-25T16:45:00Z', productId: 'p1', product: 'Cloud Computing Lab Access', qty: 1, sub: 99, disc: 0, tax: 17.82, total: 116.82, methodLabel: 'Visa ••0001 (SIMULATED)', status: 'Refunded', reason: '', promo: '', scenario: 'PAY-SUCCESS', ref: 'SIMREF-J1K2L3', refundId: 'RFD-CL-1001', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' },
+        { id: 'TXN-CL-100005', kind: 'refund', ts: '2026-09-26T08:00:00Z', product: 'Refund: Cloud Computing Lab Access', qty: 1, total: -116.82, methodLabel: 'Visa ••0001 (SIMULATED)', status: 'Refunded', linked: 'TXN-CL-100004', ref: 'SIMREF-M4N5O6', origin: 'sample' },
+        { id: 'TXN-CL-100006', kind: 'purchase', ts: '2026-10-02T11:10:00Z', productId: 'p3', product: 'Student Learning Bundle', qty: 1, sub: 299, disc: 0, tax: 53.82, total: 352.82, methodLabel: 'Visa ••0001 (SIMULATED)', status: 'Pending', reason: '', promo: '', scenario: 'PAY-SUCCESS', ref: 'SIMREF-P7Q8R9', billing: { name: 'Alex Morgan', addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India' }, origin: 'sample' }
       ],
       invoices: [
-        { id: 'inv-0001', number: 'INV-DEMO-100001', txnId: 'TXN-DEMO-100001', ts: '2026-08-14T10:20:00Z' }, { id: 'inv-0002', number: 'INV-DEMO-100002', txnId: 'TXN-DEMO-100002', ts: '2026-09-05T14:05:00Z' }, { id: 'inv-0004', number: 'INV-DEMO-100004', txnId: 'TXN-DEMO-100004', ts: '2026-09-25T16:45:00Z' }
+        { id: 'inv-0001', number: 'INV-CL-100001', txnId: 'TXN-CL-100001', ts: '2026-08-14T10:20:00Z' }, { id: 'inv-0002', number: 'INV-CL-100002', txnId: 'TXN-CL-100002', ts: '2026-09-05T14:05:00Z' }, { id: 'inv-0004', number: 'INV-CL-100004', txnId: 'TXN-CL-100004', ts: '2026-09-25T16:45:00Z' }
       ],
-      refunds: [{ id: 'RFD-DEMO-1001', txnId: 'TXN-DEMO-100004', refundTxnId: 'TXN-DEMO-100005', amount: 116.82, ts: '2026-09-26T08:00:00Z', note: 'SIMULATED REFUND — NO MONEY MOVED' }],
+      refunds: [{ id: 'RFD-CL-1001', txnId: 'TXN-CL-100004', refundTxnId: 'TXN-CL-100005', amount: 116.82, ts: '2026-09-26T08:00:00Z', note: 'SIMULATED REFUND — NO MONEY MOVED' }],
       budget: { limit: 500, threshold: 80 }
     },
     learn: { enrolled: {}, lessons: {}, quizzes: {}, labs: {}, ach: {}, certs: {}, pub: {}, alerts: [] },
@@ -500,19 +503,19 @@ function initialState() {
     notePrefs: {}, verify: { events: [], status: 'Not started', seq: 0 }, admin: { audit: [], overrides: {} },
     auth: null, session: null, selectedRegion: REGIONS[0],
     instances: [
-      { id: 'inst-0001', name: 'web-server-demo', os: OSES[1], shape: 'Lab.Small.2', status: 'Running', ip: '10.0.1.11', created: '2026-09-28', origin: 'sample' },
-      { id: 'inst-0002', name: 'test-vm-demo', os: OSES[0], shape: 'Lab.Micro.1', status: 'Stopped', ip: '10.0.1.12', created: '2026-09-29', origin: 'sample' }
+      { id: 'inst-0001', name: 'web-server', os: OSES[1], shape: 'Lab.Small.2', status: 'Running', ip: '10.0.1.11', created: '2026-09-28', origin: 'sample' },
+      { id: 'inst-0002', name: 'test-vm', os: OSES[0], shape: 'Lab.Micro.1', status: 'Stopped', ip: '10.0.1.12', created: '2026-09-29', origin: 'sample' }
     ],
-    networks: [{ id: 'vcn-0001', name: 'student-vcn-demo', cidr: '10.0.0.0/16', created: '2026-09-28', origin: 'sample' }],
+    networks: [{ id: 'vcn-0001', name: 'student-vcn', cidr: '10.0.0.0/16', created: '2026-09-28', origin: 'sample' }],
     buckets: [
-      { id: 'bkt-0001', name: 'student-assets-demo', created: '2026-09-28', origin: 'sample', files: [{ name: 'lecture-slides.pdf', mb: 18.4 }, { name: 'logo-sample.png', mb: 2.1 }, { name: 'dataset.csv', mb: 640 }] },
-      { id: 'bkt-0002', name: 'practice-backups-demo', created: '2026-09-29', origin: 'sample', files: [{ name: 'backup-2026-09.tar.gz', mb: 4200 }, { name: 'notes.txt', mb: 0.2 }] }
+      { id: 'bkt-0001', name: 'student-assets', created: '2026-09-28', origin: 'sample', files: [{ name: 'lecture-slides.pdf', mb: 18.4 }, { name: 'logo-sample.png', mb: 2.1 }, { name: 'dataset.csv', mb: 640 }] },
+      { id: 'bkt-0002', name: 'practice-backups', created: '2026-09-29', origin: 'sample', files: [{ name: 'backup-2026-09.tar.gz', mb: 4200 }, { name: 'notes.txt', mb: 0.2 }] }
     ],
     databases: [],
     activity: [
       { t: '2026-09-30T08:10:00Z', msg: 'Learning module completed: What is cloud computing?', origin: 'sample' },
-      { t: '2026-09-29T11:40:00Z', msg: 'Storage bucket initialized: practice-backups-demo', origin: 'sample' },
-      { t: '2026-09-28T09:15:00Z', msg: 'Demo instance created: web-server-demo', origin: 'sample' }
+      { t: '2026-09-29T11:40:00Z', msg: 'Storage bucket initialized: practice-backups', origin: 'sample' },
+      { t: '2026-09-28T09:15:00Z', msg: 'Instance created: web-server', origin: 'sample' }
     ],
     lessons: {}, budget: { limit: 4000, threshold: 80 }, extraUsage: 0, flags: {},
     exercise: { active: false, instanceId: null, created: false, checked: false, details: false, stopped: false, done: false }
@@ -544,12 +547,12 @@ function load() {
 }
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch (e) { if (storageOK) { storageOK = false; toast('Browser storage is unavailable; the demo will keep state in memory for this tab only.', 'warn'); } }
+  catch (e) { if (storageOK) { storageOK = false; toast('Browser storage is unavailable; the will keep state in memory for this tab only.', 'warn'); } }
 }
 function uid(p) { return p + '-' + String(++S.seq).padStart(4, '0'); }
 function logAct(msg) { S.activity.unshift({ t: new Date().toISOString(), msg: msg, origin: 'student' }); if (S.activity.length > 60) S.activity.length = 60; }
 function commit() { save(); if (S.session) { if (S.session.type === 'admin') renderAdminBody(); else { renderMain(); updateChrome(); } } }
-function who() { return S.session && S.session.type === 'guest' ? { name: 'Guest Learner', id: 'DEMO-GUEST-0000', guest: true } : { name: S.profile.displayName, id: S.profile.accountId, guest: false }; }
+function who() { return S.session && S.session.type === 'guest' ? { name: 'Guest Learner', id: 'CL-GUEST-0000', guest: true } : { name: S.profile.displayName, id: S.profile.accountId, guest: false }; }
 function activeInstances() { return S.instances.filter(function (i) { return i.status !== 'Terminated'; }); }
 function storageUsedMB() { return S.buckets.reduce(function (a, b) { return a + b.files.reduce(function (x, f) { return x + f.mb; }, 0); }, 0); }
 function logGB() { return Math.round((0.4 + S.activity.length * 0.03 + S.instances.filter(function (i) { return i.status === 'Running'; }).length * 0.35) * 10) / 10; }
@@ -621,8 +624,8 @@ function footer() {
   var L = function (t, p) { return h('button', { onclick: function () { infoDialog(t, p); } }, t); };
   return h('footer', { class: 'foot' }, h('div', { class: 'in' },
     h('div', { class: 'row' }, L('About', ['CloudLab Free is an independent educational simulator inspired by the general look and workflow of cloud provider consoles. It is not affiliated with, endorsed by, or a replacement for any real cloud provider.', 'Everything runs locally in your browser with fictional data.']),
-      L('Documentation', ['Use the landing page to create a demo account or enter as a guest. In the console you can create simulated instances, networks, buckets and databases, watch simulated metrics, track a simulated budget, and complete lessons.', 'Press / in the console to focus search. Press Esc to close dialogs and menus.']),
-      L('Privacy', ['Your data stays in your browser. There is no analytics and no tracking by this simulator. The only external link is the labeled Sponsored link: it opens another website in a new tab only if you click it, and that site has its own privacy practices.', 'Non-sensitive profile and resource data is kept in localStorage, which anyone with access to this browser profile can read or modify. Passwords are never stored in plaintext; only a salted hash is kept for local demo sign-in.']),
+      L('Documentation', ['Use the landing page to create an account or enter as a guest. In the console you can create simulated instances, networks, buckets and databases, watch simulated metrics, track a simulated budget, and complete lessons.', 'Press / in the console to focus search. Press Esc to close dialogs and menus.']),
+      L('Privacy', ['Your data stays in your browser. There is no analytics and no tracking by this simulator. The only external link is the labeled Sponsored link: it opens another website in a new tab only if you click it, and that site has its own privacy practices.', 'Non-sensitive profile and resource data is kept in localStorage, which anyone with access to this browser profile can read or modify. Passwords are never stored in plaintext; only a salted hash is kept for local sign-in.']),
       L('Terms', ['This simulator is for learning only. It does not create cloud accounts, resources or invoices. All monetary values are labeled SIMULATED and are never real charges. Do not enter real passwords, payment details or identity documents. The Sponsored link leads to a third-party site that is not part of CloudLab; never enter simulator credentials or real payment details there.'])),
     h('p', { class: 'small', style: 'margin-top:12px' }, '© CloudLab Free — educational simulator. Not the official website of any cloud provider.')));
 }
@@ -632,9 +635,9 @@ function renderLanding() {
   return [pubHeader(),
     h('main', { id: 'main' },
       h('section', { class: 'hero', id: 'overview' }, h('div', { class: 'in' },
-        h('div', null, h('span', { class: 'chip' }, 'Demo mode'), h('h1', { style: 'margin-top:12px' }, 'Start learning cloud computing for free.'),
+        h('div', null, h('h1', { style: 'margin-top:12px' }, 'Start learning cloud computing for free.'),
           h('p', null, 'Practice with virtual machines, networking, storage and cloud management in a safe simulator. No card, no real servers, no surprise bills.'),
-          h('div', { class: 'row', style: 'margin-top:20px' }, btn('Create Free Demo Account', 'primary lg', function () { go('signup'); }), btn('Explore Demo Console', 'lg', startGuest))),
+          h('div', { class: 'row', style: 'margin-top:20px' }, btn('Create Free Account', 'primary lg', function () { go('signup'); }), btn('Explore Console', 'lg', startGuest))),
         h('div', { class: 'art', 'aria-hidden': 'true' }, heroArt()))),
       h('section', { class: 'sect' }, h('h2', null, 'What you can practice'), h('div', { class: 'grid g4' }, feats.map(function (f) { return h('div', { class: 'card feat' }, h('div', { class: 'ic' }, icon(f[0])), h('h3', null, f[1]), h('p', { class: 'muted' }, f[2])); }))),
       h('section', { class: 'sect', id: 'freetier', style: 'padding-top:0' }, h('h2', null, 'Free-tier overview (fictional example quotas)'),
@@ -642,7 +645,7 @@ function renderLanding() {
         callout('info', 'These values are examples for the simulator, NOT actual cloud provider quotas or entitlements.')),
       h('section', { class: 'sect', id: 'learning', style: 'padding-top:0' }, h('h2', null, 'Learning Center'), h('p', { class: 'muted' }, 'Eight beginner lessons with practical tasks, a glossary and a guided exercise.'),
         h('div', { class: 'grid g2' }, LESSONS.map(function (l, i) { return h('div', { class: 'card' }, h('strong', null, (i + 1) + '. ' + l.title), h('p', { class: 'muted small', style: 'margin:6px 0 0' }, l.body.split('. ')[0] + '.')); })),
-        h('div', { style: 'margin-top:16px' }, btn('Explore Demo Console', 'primary', startGuest))),
+        h('div', { style: 'margin-top:16px' }, btn('Explore Console', 'primary', startGuest))),
       h('section', { class: 'sect', style: 'padding-top:0' }, sponsoredCard()),
       h('section', { class: 'sect', style: 'padding-top:0' }, h('div', { class: 'card' }, h('h2', null, 'Simulator limitations'),
         h('ul', null, [
@@ -650,7 +653,7 @@ function renderLanding() {
           'No real cloud accounts, tenancies, servers, networks or databases are created.',
           'Email is not verified and no data is sent anywhere. Do not enter real card, payment or identity information.',
           'Billing figures are simulated and never represent real charges.',
-          'Demo data lives in your browser\'s localStorage, where it can be inspected or modified. Local sign-in is a teaching aid and is not secure.'].map(function (t) { return h('li', null, t); }))))),
+          'Data lives in your browser\'s localStorage, where it can be inspected or modified. Local sign-in is a teaching aid and is not secure.'].map(function (t) { return h('li', null, t); }))))),
     footer()];
 }
 function heroArt() {
@@ -660,8 +663,25 @@ function heroArt() {
   return s;
 }
 
-/* ---------- Signup wizard ---------- */
-function newDraft() { return { firstName: 'Alex', lastName: 'Morgan', email: 'alex.morgan@example.com', country: 'Sample Country', display: 'Alex Morgan', username: 'alex.morgan.demo', pw: '', pw2: '', region: REGIONS[0], language: 'English', level: 'Beginner' }; }
+/* ---------- Signup wizard (7 steps, modelled on a typical cloud free-account flow) ---------- */
+/* Demo-only phone and card steps. Nothing is sent anywhere. Only whitelisted test card numbers are accepted;
+   the card number and CVV are never stored (only brand + last 4 digits of a number are kept). */
+var SU_STEPS = ['Account', 'Security', 'Contact', 'Phone', 'Payment', 'Support', 'Review'];
+var CCODES = [{ v: '+91', l: '+91 India' }, { v: '+1', l: '+1 United States / Canada' }, { v: '+44', l: '+44 United Kingdom' }, { v: '+49', l: '+49 Germany' }, { v: '+65', l: '+65 Singapore' }, { v: '+61', l: '+61 Australia' }];
+var DEMO_NUMS = {
+  '4242424242424242': { brand: 'Visa', result: 'success', label: 'Approved' },
+  '5555555555554444': { brand: 'Mastercard', result: 'success', label: 'Approved' },
+  '4000000000000002': { brand: 'Visa', result: 'decline', label: 'Declined' },
+  '4000000000000119': { brand: 'Visa', result: 'error', label: 'Processing error' }
+};
+function fmtCard(d) { return d.replace(/\D/g, '').slice(0, 19).replace(/(\d{4})(?=\d)/g, '$1 '); }
+function cleanPhone(p) { return String(p || '').replace(/[\s\-().]/g, ''); }
+function maskPhone(cc, p) { var c = cleanPhone(p); return cc + ' ' + '•'.repeat(Math.max(0, c.length - 4)) + c.slice(-4); }
+function newDraft() {
+  return { firstName: 'Alex', lastName: 'Morgan', email: 'alex.morgan@example.com', country: 'India', display: 'Alex Morgan', username: 'alex.morgan', pw: '', pw2: '',
+    acctType: 'Personal', ccode: '+91', phone: '9876543210', phoneOk: false, phoneKey: '', region: REGIONS[0], language: 'English', level: 'Beginner',
+    cardNo: '', cardHolder: 'Alex Morgan', exp: '12/30', cvv: '', pay: null, paySkipped: false, payEvents: [], plan: 'Basic' };
+}
 function vStep(n, d) {
   var e = {};
   if (n === 1) {
@@ -677,73 +697,172 @@ function vStep(n, d) {
     if (!d.pw2) e.pw2 = 'Confirm your password.'; else if (d.pw !== d.pw2) e.pw2 = 'Passwords do not match.';
   }
   if (n === 3) {
-    if (!d.display.trim()) e.display = 'Enter a display name.'; else if (d.display.length > 40) e.display = 'Display name must be 40 characters or fewer.';
+    if (['Personal', 'Business'].indexOf(d.acctType) < 0) e.acctType = 'Choose Personal or Business.';
+    var p = cleanPhone(d.phone);
+    if (!p) e.phone = 'Enter a phone number (use a fictional one).'; else if (!/^\d+$/.test(p)) e.phone = 'Use digits only.';
+    else if (d.ccode === '+91' ? !/^[6-9]\d{9}$/.test(p) : !/^\d{7,12}$/.test(p)) e.phone = d.ccode === '+91' ? 'Enter a 10-digit Indian mobile number starting with 6–9.' : 'Enter 7–12 digits.';
     if (REGIONS.indexOf(d.region) < 0) e.region = 'Select a sample region.';
     if (LANGS.indexOf(d.language) < 0) e.language = 'Select a language.';
     if (['Beginner', 'Intermediate', 'Advanced'].indexOf(d.level) < 0) e.level = 'Select an experience level.';
   }
+  if (n === 4 && !(d.phoneOk && d.phoneKey === d.ccode + cleanPhone(d.phone))) e.otp = 'Verify your phone number with the code to continue.';
+  if (n === 5 && !d.pay && !d.paySkipped) e.cardNo = 'Verify a card, or choose "Skip for now".';
+  if (n === 6 && d.plan !== 'Basic') e.plan = 'Select the Basic plan.';
   return e;
 }
 function wfield(label, key, o) {
   o = o || {}; var d = ui.draft, er = ui.errors[key], id = 'w-' + key, el;
-  if (o.options) { el = select(o.options, d[key], { id: id }); el.addEventListener('change', function () { d[key] = el.value; }); }
-  else { el = h('input', { id: id, type: o.type || 'text', value: d[key], autocomplete: o.auto || 'off', oninput: function (e) { d[key] = e.target.value; if (o.onInput) o.onInput(e.target.value); } }); }
+  if (o.options) { el = select(o.options, d[key], { id: id }); el.addEventListener('change', function () { d[key] = el.value; if (o.onChange) o.onChange(); }); }
+  else { el = h('input', { id: id, type: o.type || 'text', value: d[key], autocomplete: o.auto || 'off', inputmode: o.mode || null, maxlength: o.max || null, oninput: function (e) { if (o.fmt) e.target.value = o.fmt(e.target.value); d[key] = e.target.value; if (o.onInput) o.onInput(e.target.value); } }); }
   el.setAttribute('aria-describedby', id + '-e' + (o.hint ? ' ' + id + '-h' : '')); if (er) { el.classList.add('bad'); el.setAttribute('aria-invalid', 'true'); }
   return h('div', { class: 'fg' }, h('label', { for: id }, label), el, o.hint ? h('div', { class: 'hint', id: id + '-h' }, o.hint) : null, h('div', { class: 'err', id: id + '-e', role: 'alert' }, er || ''));
 }
+function resetPhoneProof() { var d = ui.draft; d.phoneOk = false; d.phoneKey = ''; ui.otp = null; }
+
+/* --- step 4: phone verification with a SMS --- */
+function sendOtp() {
+  var d = ui.draft, key = d.ccode + cleanPhone(d.phone);
+  ui.otp = { code: String(100000 + Math.floor(Math.random() * 900000)), at: Date.now(), tries: 0, key: key };
+  ui.errors = {}; render(); toast('SMS generated. No real message was sent.', 'ok');
+  setTimeout(function () { if (ui.page === 'signup' && ui.step === 4) render(); }, 15200);
+}
+function checkOtp() {
+  var d = ui.draft, inp = $('#w-otp'), v = inp ? inp.value.replace(/\D/g, '') : '', o = ui.otp;
+  if (!o) { ui.errors = { otp: 'Send a code first.' }; render(); return; }
+  if (Date.now() - o.at > 300000) { ui.errors = { otp: 'This code expired. Send a new code.' }; ui.otp = null; render(); return; }
+  if (o.tries >= 3) { ui.errors = { otp: 'Too many wrong attempts. Send a new code.' }; render(); return; }
+  if (v.length !== 6) { ui.errors = { otp: 'Enter the 6-digit code from the SMS box.' }; render(); return; }
+  if (v !== o.code) { o.tries++; ui.errors = { otp: 'That code is not correct. ' + (3 - o.tries) + ' attempt(s) left.' }; render(); return; }
+  d.phoneOk = true; d.phoneKey = o.key; ui.errors = {}; ui.otp = null; render(); toast('Phone verified.', 'ok');
+}
+
+/* --- step 5: card verification (simulated ₹1.00 temporary charge) --- */
+function verifyCard() {
+  var d = ui.draft, num = d.cardNo.replace(/\D/g, ''), info = DEMO_NUMS[num], e = {};
+  if (!info) e.cardNo = 'Only the test card numbers listed below are accepted. Never type a real card number here.';
+  if (!/^[A-Za-z][A-Za-z .'-]{1,29}$/.test(d.cardHolder.trim())) e.cardHolder = 'Enter a fictional cardholder name (letters only).';
+  var m = /^(\d{2})\/(\d{2})$/.exec(d.exp.trim()), now = new Date(), yy = now.getFullYear() % 100, mm = now.getMonth() + 1;
+  if (!m || +m[1] < 1 || +m[1] > 12) e.exp = 'Enter the expiry as MM/YY.'; else if (+m[2] < yy || (+m[2] === yy && +m[1] < mm)) e.exp = 'This card has expired. Use a future date.';
+  if (d.cvv !== '123') e.cvv = 'CVV is 123.';
+  if (Object.keys(e).length) { ui.errors = e; render(); var f = document.querySelector('.bad'); if (f) f.focus(); return; }
+  if (ui.paying) return; ui.paying = true; ui.errors = {};
+  var bar2 = h('i', { style: 'width:0' }), i = 0;
+  openModal({ title: 'Simulated ₹1.00 verification', dismissible: false, body: h('div', null, h('p', null, 'Simulating a temporary ₹1.00 verification charge on the card…'), h('div', { class: 'prog', role: 'progressbar', 'aria-label': 'Simulation progress' }, bar2)) });
+  var iv = setInterval(function () { i++; bar2.style.width = Math.min(100, i * 50) + '%'; }, 600);
+  setTimeout(function () {
+    clearInterval(iv); ui.paying = false; var top = modalStack[modalStack.length - 1]; if (top) top.close();
+    var ts = new Date().toISOString(), res = info.result;
+    if (res === 'success') {
+      d.pay = { brand: info.brand, last4: num.slice(-4), holder: d.cardHolder.trim(), exp: d.exp.trim(), at: ts }; d.paySkipped = false; d.payEvents.push({ result: 'Verified', note: 'Simulated ₹1.00 verification succeeded on ' + info.brand + ' ••' + num.slice(-4) + '.', ts: ts });
+      d.cardNo = ''; d.cvv = ''; ui.errors = {}; toast('Card verified (simulated).', 'ok');
+    } else {
+      var msg = res === 'decline' ? 'Card declined (simulated). No money moved. Try another card.' : 'Simulated processing error. No money moved. Please try again.';
+      d.payEvents.push({ result: res === 'decline' ? 'Declined' : 'Failed', note: msg, ts: ts }); d.cvv = ''; ui.errors = { cardNo: msg }; toast(msg, 'warn');
+    }
+    render();
+  }, 1500);
+}
+function stepPayment() {
+  var d = ui.draft, er = ui.errors;
+  if (d.pay) return [h('h2', null, 'Step 5 — Payment information'), callout('ok', h('strong', null, 'Card verified. '), 'A simulated ₹1.00 temporary charge was "approved". No money moved.'),
+    payCard({ brand: d.pay.brand, last4: d.pay.last4, holder: d.pay.holder, exp: d.pay.exp, isDefault: true }), h('div', { class: 'row', style: 'margin-top:12px' }, btn('Use a different card', 'sm', function () { d.pay = null; render(); }))];
+  var numIn = h('input', { id: 'w-cardNo', type: 'text', inputmode: 'numeric', autocomplete: 'off', maxlength: '23', placeholder: '0000 0000 0000 0000', value: fmtCard(d.cardNo), 'aria-describedby': 'w-cardNo-e', oninput: function (e) { var v = fmtCard(e.target.value); e.target.value = v; d.cardNo = v.replace(/\D/g, ''); } });
+  var expIn = h('input', { id: 'w-exp', type: 'text', inputmode: 'numeric', autocomplete: 'off', maxlength: '5', value: d.exp, 'aria-describedby': 'w-exp-e', oninput: function (e) { var v = e.target.value.replace(/[^\d]/g, '').slice(0, 4); if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2); e.target.value = v; d.exp = v; } });
+  var cvvIn = h('input', { id: 'w-cvv', type: 'password', inputmode: 'numeric', autocomplete: 'off', maxlength: '3', value: d.cvv, 'aria-describedby': 'w-cvv-e', oninput: function (e) { e.target.value = e.target.value.replace(/\D/g, ''); d.cvv = e.target.value; } });
+  ['cardNo', 'exp', 'cvv'].forEach(function (k) { if (er[k]) { var el = k === 'cardNo' ? numIn : k === 'exp' ? expIn : cvvIn; el.classList.add('bad'); el.setAttribute('aria-invalid', 'true'); } });
+  return [h('h2', null, 'Step 5 — Payment information'),
+    callout('warn', h('strong', null, 'DEMO — NO REAL PAYMENT. '), 'Real clouds often make a small temporary charge to check a card is valid. Here it is simulated: ₹1.00, no money moves. Only the test numbers below are accepted. NEVER type a real card number. The number and CVV are never saved; only the brand and last 4 digits are kept.'),
+    h('div', { class: 'fg' }, h('label', { for: 'w-cardNo' }, 'Card number (numbers only)'), numIn, h('div', { class: 'err', id: 'w-cardNo-e', role: 'alert' }, er.cardNo || '')),
+    wfield('Name on card (fictional)', 'cardHolder'),
+    h('div', { class: 'grid g2' }, h('div', { class: 'fg' }, h('label', { for: 'w-exp' }, 'Expiry (MM/YY)'), expIn, h('div', { class: 'err', id: 'w-exp-e', role: 'alert' }, er.exp || '')), h('div', { class: 'fg' }, h('label', { for: 'w-cvv' }, 'CVV (use 123)'), cvvIn, h('div', { class: 'err', id: 'w-cvv-e', role: 'alert' }, er.cvv || ''))),
+    h('div', { class: 'card', style: 'margin:10px 0' }, h('strong', null, 'Test cards — tap to fill'), h('div', { class: 'small muted', style: 'margin:4px 0 8px' }, 'These are public-style test numbers, not real cards.'),
+      Object.keys(DEMO_NUMS).map(function (n) { var x = DEMO_NUMS[n]; return h('button', { class: 'btn sm', style: 'margin:0 6px 6px 0', onclick: function () { d.cardNo = n; d.cvv = '123'; d.exp = d.exp || '12/30'; ui.errors = {}; render(); } }, fmtCard(n) + ' — ' + x.brand + ' · ' + x.label); })),
+    h('div', { class: 'row' }, btn('Verify card (₹1.00 charge)', 'primary', verifyCard), btn('Skip for now', '', function () { d.paySkipped = true; d.pay = null; ui.errors = {}; ui.step = 6; render(); })),
+    d.payEvents.length ? h('div', { class: 'small muted', style: 'margin-top:10px' }, 'Attempts this session: ' + d.payEvents.map(function (x) { return x.result; }).join(', ')) : null];
+}
+function stepPhone() {
+  var d = ui.draft, o = ui.otp, er = ui.errors, key = d.ccode + cleanPhone(d.phone), ok = d.phoneOk && d.phoneKey === key;
+  var body = [h('h2', null, 'Step 4 — Verify your phone number'), callout('info', 'No real SMS is sent. This simulator shows the code in the SMS box below. Your phone number is stored only in masked form.'),
+    h('p', null, 'Verifying: ', h('strong', { class: 'mono' }, maskPhone(d.ccode, d.phone)))];
+  if (ok) { body.push(callout('ok', h('strong', null, 'Phone verified. '), 'You can continue.')); return body; }
+  if (!o) { body.push(btn('Send code', 'primary', sendOtp)); if (er.otp) body.push(h('div', { class: 'err', role: 'alert' }, er.otp)); return body; }
+  var wait = Math.max(0, 15 - Math.floor((Date.now() - o.at) / 1000));
+  var inp = h('input', { id: 'w-otp', type: 'text', inputmode: 'numeric', autocomplete: 'one-time-code', maxlength: '6', placeholder: '6-digit code', 'aria-describedby': 'w-otp-e', onkeydown: function (e) { if (e.key === 'Enter') { e.preventDefault(); checkOtp(); } } });
+  if (er.otp) { inp.classList.add('bad'); inp.setAttribute('aria-invalid', 'true'); }
+  body.push(h('div', { class: 'demosms', role: 'status' }, h('div', { class: 'small' }, 'SMS INBOX — no real message was sent'), h('div', null, 'CloudLab code: ', h('strong', { class: 'mono', style: 'font-size:1.2rem;letter-spacing:.15em' }, o.code))),
+    h('div', { class: 'fg', style: 'margin-top:12px' }, h('label', { for: 'w-otp' }, 'Enter the code'), inp, h('div', { class: 'err', id: 'w-otp-e', role: 'alert' }, er.otp || '')),
+    h('div', { class: 'row' }, btn('Verify code', 'primary', checkOtp), btn(wait ? 'Resend in ' + wait + 's' : 'Resend code', '', sendOtp, { disabled: wait > 0 })));
+  return body;
+}
 function renderSignup() {
-  var d = ui.draft, steps = ['Account details', 'Security', 'Preferences', 'Review'];
-  var body;
-  if (ui.step === 1) body = [h('h2', null, 'Step 1 — Demo account details'), callout('info', 'Real email verification is not performed. Nothing you type is sent anywhere. The values below are fictional and fully editable.'),
-    h('div', { class: 'grid g2' }, wfield('First name', 'firstName', { auto: 'off' }), wfield('Last name', 'lastName')),
+  var d = ui.draft, body;
+  if (ui.step === 1) body = [h('h2', null, 'Step 1 — Email and account details'), callout('info', 'Real email verification is not performed. Nothing you type is sent anywhere. The values below are fictional and fully editable.'),
+    h('div', { class: 'grid g2' }, wfield('First name', 'firstName'), wfield('Last name', 'lastName')),
     wfield('Email address', 'email', { type: 'email', hint: 'Use a fictional address (e.g. name@example.com). No message will be sent.' }), wfield('Country or region', 'country', { options: COUNTRIES }), wfield('Preferred display name', 'display')];
   else if (ui.step === 2) {
     var meter = h('i'), mlabel = h('span', { class: 'small muted', id: 'pwlabel' }, '');
     var upd = function () { var s = passScore(d.pw); meter.style.width = (d.pw ? (s + 1) * 20 : 0) + '%'; meter.style.background = ['#b42318', '#d98a1a', '#c9a400', '#4aa564', '#17803d'][s]; mlabel.textContent = d.pw ? 'Strength: ' + ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'][s] : ''; };
-    var pwInput = wfield('Demo password', 'pw', { type: 'password', auto: 'new-password', onInput: upd });
+    var pwInput = wfield('Password', 'pw', { type: 'password', auto: 'new-password', onInput: upd });
     var pw2Input = wfield('Confirm password', 'pw2', { type: 'password', auto: 'new-password' });
     var tog = btn('Show passwords', '', function () { var inp = [$('#w-pw'), $('#w-pw2')], show = inp[0].type === 'password'; inp.forEach(function (i) { i.type = show ? 'text' : 'password'; }); tog.textContent = show ? 'Hide passwords' : 'Show passwords'; tog.setAttribute('aria-pressed', String(show)); }, { 'aria-pressed': 'false' });
     body = [h('h2', null, 'Step 2 — Security setup'), callout('warn', 'These credentials belong only to this local demonstration. Do NOT reuse a real password. Your password is never stored in plaintext — only a salted hash is kept in this browser.'),
-      wfield('Demo username', 'username', { hint: '4–24 characters: lowercase letters, numbers, dot, dash, underscore.' }), pwInput, h('div', { class: 'meter', 'aria-hidden': 'true' }, meter), mlabel, h('div', { style: 'margin-top:10px' }), pw2Input, tog,
-      h('p', { class: 'muted small', style: 'margin-top:12px' }, 'A fictional demo account identifier (like DEMO-OC-12345) will be generated when you finish.')];
+      wfield('Username', 'username', { hint: '4–24 characters: lowercase letters, numbers, dot, dash, underscore.' }), pwInput, h('div', { class: 'meter', 'aria-hidden': 'true' }, meter), mlabel, h('div', { style: 'margin-top:10px' }), pw2Input, tog,
+      h('p', { class: 'muted small', style: 'margin-top:12px' }, 'A fictional account identifier (like CL-OC-12345) will be generated when you finish.')];
     setTimeout(upd, 0);
-  } else if (ui.step === 3) body = [h('h2', null, 'Step 3 — Account preferences'), callout('info', 'Region selection is simulated. It does not create a real cloud tenancy.'),
-    wfield('Display name', 'display'), wfield('Home region (sample)', 'region', { options: REGIONS }), wfield('Preferred language', 'language', { options: LANGS }), wfield('Learning experience', 'level', { options: ['Beginner', 'Intermediate', 'Advanced'] })];
-  else body = [h('h2', null, 'Step 4 — Review and confirm'), h('p', { class: 'muted' }, 'Only non-sensitive information is shown and saved. Your password is not displayed.'),
-    h('div', { class: 'card' }, h('dl', { class: 'dl' }, [['Name', d.firstName + ' ' + d.lastName], ['Email', d.email], ['Country / region', d.country], ['Display name', d.display], ['Username', d.username], ['Password', '•••••••• (hidden)'], ['Home region', d.region], ['Language', d.language], ['Experience', d.level]].map(function (r) { return [h('dt', null, r[0]), h('dd', null, r[1])]; }))),
-    h('div', { class: 'row', style: 'margin-top:10px' }, btn('Edit details', 'sm', function () { ui.step = 1; render(); }), btn('Edit security', 'sm', function () { ui.step = 2; render(); }), btn('Edit preferences', 'sm', function () { ui.step = 3; render(); }))];
+  } else if (ui.step === 3) body = [h('h2', null, 'Step 3 — Contact information'), callout('info', 'Choose the account type, then enter a fictional phone number (for example 98765 43210). You will "verify" it in the next step with a code. Region selection is simulated and creates no real tenancy.'),
+    wfield('Account type', 'acctType', { options: [{ v: 'Personal', l: 'Personal (for individuals)' }, { v: 'Business', l: 'Business (for organizations)' }] }),
+    h('div', { class: 'grid', style: 'grid-template-columns:minmax(0,1fr) minmax(0,2fr)' }, wfield('Country code', 'ccode', { options: CCODES, onChange: resetPhoneProof }), wfield('Phone number', 'phone', { type: 'tel', mode: 'numeric', max: '16', auto: 'off', onInput: resetPhoneProof, hint: 'Stored only as a masked value (last 4 digits).' })),
+    wfield('Home region (sample)', 'region', { options: REGIONS }), wfield('Preferred language', 'language', { options: LANGS }), wfield('Learning experience', 'level', { options: ['Beginner', 'Intermediate', 'Advanced'] })];
+  else if (ui.step === 4) body = stepPhone();
+  else if (ui.step === 5) body = stepPayment();
+  else if (ui.step === 6) body = [h('h2', null, 'Step 6 — Select a support plan'), callout('info', 'Support plans here are illustrations. Only the free Basic plan is available in this simulator.'),
+    [['Basic', 'Free — included with every account', true], ['Developer', 'Simulated paid plan — not available', false], ['Business', 'Simulated paid plan — not available', false]].map(function (p) { return h('label', { class: 'mrow', style: 'font-weight:500;opacity:' + (p[2] ? 1 : 0.55) }, h('input', { type: 'radio', name: 'plan', value: p[0], checked: d.plan === p[0], disabled: !p[2], onchange: function () { d.plan = p[0]; } }), h('span', null, h('strong', null, p[0] + ' plan'), h('span', { class: 'muted small' }, ' · ' + p[1]))); })];
+  else body = [h('h2', null, 'Step 7 — Review and confirm'), h('p', { class: 'muted' }, 'Only non-sensitive information is shown and saved. Your password, full phone number, card number and CVV are never saved.'),
+    h('div', { class: 'card' }, h('dl', { class: 'dl' }, [['Name', d.firstName + ' ' + d.lastName], ['Email', d.email], ['Country / region', d.country], ['Display name', d.display], ['Username', d.username], ['Password', '•••••••• (hidden)'], ['Account type', d.acctType], ['Phone', maskPhone(d.ccode, d.phone) + (d.phoneOk ? ' — verified' : ' — not verified')], ['Home region', d.region], ['Language', d.language], ['Experience', d.level],
+      ['Card', d.pay ? d.pay.brand + ' ••' + d.pay.last4 + ' — ₹1.00 verification approved (SIMULATED)' : 'Skipped'], ['Support plan', d.plan + ' (free)']].map(function (r) { return [h('dt', null, r[0]), h('dd', null, r[1])]; }))),
+    h('div', { class: 'row', style: 'margin-top:10px' }, [['Account', 1], ['Security', 2], ['Contact', 3], ['Phone', 4], ['Payment', 5], ['Support', 6]].map(function (x) { return btn('Edit ' + x[0].toLowerCase(), 'sm', function () { ui.step = x[1]; ui.errors = {}; render(); }); }))];
+  var showNav = !(ui.step === 5 && !d.pay);
   var nav = h('div', { class: 'row spread', style: 'margin-top:18px' },
     ui.step > 1 ? btn('Back', '', function () { ui.step--; ui.errors = {}; render(); }) : btn('Cancel', '', function () { go('landing'); }),
-    ui.step < 4 ? btn('Continue', 'primary', function () { var e = vStep(ui.step, d); ui.errors = e; if (Object.keys(e).length) { render(); var f = document.querySelector('.bad'); if (f) f.focus(); return; } ui.step++; render(); }) : btn('Create Demo Account', 'primary', createAccount));
-  return [pubHeader(), h('main', { id: 'main', class: 'wizard' }, h('div', { class: 'row spread', style: 'margin-bottom:10px' }, h('h1', { style: 'margin:0' }, 'Create your free demo account'), h('span', { class: 'chip' }, 'Demo mode')),
-    h('ol', { class: 'stepper', 'aria-label': 'Progress' }, steps.map(function (s, i) { return h('li', { class: i + 1 === ui.step ? 'on' : i + 1 < ui.step ? 'done' : '', 'aria-current': i + 1 === ui.step ? 'step' : null }, (i + 1) + '. ' + s); })),
+    ui.step < 7 ? (showNav || d.pay ? btn('Continue', 'primary', function () { var e = vStep(ui.step, d); ui.errors = e; if (Object.keys(e).length) { render(); var f = document.querySelector('.bad,.err:not(:empty)'); if (f && f.focus) f.focus(); return; } ui.step++; render(); }) : h('span', { class: 'muted small' }, 'Verify a card or skip to continue')) : btn('Create Account', 'primary', createAccount));
+  return [pubHeader(), h('main', { id: 'main', class: 'wizard' }, h('div', { class: 'row spread', style: 'margin-bottom:10px' }, h('h1', { style: 'margin:0' }, 'Create your free account'), ),
+    h('ol', { class: 'stepper', 'aria-label': 'Progress' }, SU_STEPS.map(function (s, i) { return h('li', { class: i + 1 === ui.step ? 'on' : i + 1 < ui.step ? 'done' : '', 'aria-current': i + 1 === ui.step ? 'step' : null }, h('span', { class: 'sn' }, (i + 1) + '.'), ' ', h('span', { class: 'nm' }, s)); })),
     h('form', { class: 'card', novalidate: 'novalidate', onsubmit: function (e) { e.preventDefault(); } }, body, nav),
-    h('p', { class: 'muted small', style: 'margin-top:12px' }, 'Demo mode: no data is sent to any server. localStorage data can be inspected or modified by anyone with access to this browser.')), footer()];
+    null), footer()];
 }
 function createAccount() {
   var d = ui.draft;
-  for (var n = 1; n <= 3; n++) { var e = vStep(n, d); if (Object.keys(e).length) { ui.step = n; ui.errors = e; render(); toast('Please fix the highlighted fields before creating the account.', 'err'); return; } }
-  var bar = h('i', { style: 'width:0' }), msg = h('p', { class: 'muted', id: 'cp' }, 'Preparing demo profile…');
-  var m = openModal({ title: 'Creating demo account', dismissible: false, body: h('div', null, msg, h('div', { class: 'prog', role: 'progressbar', 'aria-label': 'Account creation progress' }, bar), h('p', { class: 'small muted', style: 'margin-top:10px' }, 'This is a simulated progress animation. Nothing is being created in the cloud.')) });
-  var texts = ['Preparing demo profile…', 'Generating fictional account ID…', 'Securing local demo credentials…', 'Finalizing sample region…'], i = 0;
-  var salt = String(Math.random()).slice(2, 12);
-  var hp = hashPw(salt, d.pw);
+  for (var n = 1; n <= 6; n++) { var e = vStep(n, d); if (Object.keys(e).length) { ui.step = n; ui.errors = e; render(); toast('Please finish step ' + n + ' before creating the account.', 'err'); return; } }
+  var bar = h('i', { style: 'width:0' }), msg = h('p', { class: 'muted', id: 'cp' }, 'Preparing profile…');
+  var m = openModal({ title: 'Creating account', dismissible: false, body: h('div', null, msg, h('div', { class: 'prog', role: 'progressbar', 'aria-label': 'Account creation progress' }, bar), h('p', { class: 'small muted', style: 'margin-top:10px' }, 'This is a simulated progress animation. Nothing is being created in the cloud.')) });
+  var texts = ['Preparing profile…', 'Generating fictional account ID…', 'Securing local credentials…', 'Finalizing sample region…'], i = 0;
+  var salt = String(Math.random()).slice(2, 12), hp = hashPw(salt, d.pw);
   var iv = setInterval(function () { i++; bar.style.width = (i * 25) + '%'; if (i < 4) msg.textContent = texts[i]; }, 450);
   setTimeout(function () {
     hp.then(function (hash) {
       clearInterval(iv); m.close();
-      var id; do { id = 'DEMO-OC-' + (10000 + Math.floor(Math.random() * 89999)); } while (id === 'DEMO-OC-10482');
-      S.profile = { displayName: d.display.trim(), firstName: d.firstName.trim(), lastName: d.lastName.trim(), email: d.email.trim(), country: d.country, username: d.username, accountId: id, language: d.language, level: d.level, created: today() };
-      S.auth = { salt: salt, hash: hash }; S.selectedRegion = d.region; S.session = null; logAct('Demo account created: ' + d.username); addNote('welcome', 'Welcome, ' + d.display.trim(), 'Your demo account is ready. Real email verification is not performed in this simulator.'); addNote('verify', 'Email verification (simulated)', 'No email was sent. This simulator never sends or verifies real email.');
-      d.pw = d.pw2 = ''; save(); ui.page = 'success'; render(); window.scrollTo(0, 0);
+      var id; do { id = 'CL-OC-' + (10000 + Math.floor(Math.random() * 89999)); } while (id === 'CL-OC-10482');
+      S.profile = { displayName: d.display.trim(), firstName: d.firstName.trim(), lastName: d.lastName.trim(), email: d.email.trim(), country: d.country, username: d.username, accountId: id, language: d.language, level: d.level, created: today(), acctType: d.acctType, phone: maskPhone(d.ccode, d.phone), phoneVerified: true, plan: d.plan };
+      S.auth = { salt: salt, hash: hash }; S.selectedRegion = d.region; S.session = null; logAct('Account created: ' + d.username);
+      addNote('welcome', 'Welcome, ' + d.display.trim(), 'Your account is ready. Real email verification is not performed in this simulator.');
+      addNote('verify', 'Phone verified', 'Your phone (' + maskPhone(d.ccode, d.phone) + ') was verified with a code. No real SMS was sent.');
+      if (d.pay) {
+        S.bill.methods.forEach(function (x) { x.isDefault = false; });
+        S.bill.methods.push({ id: uid('pm'), brand: d.pay.brand, last4: d.pay.last4, holder: d.pay.holder, exp: d.pay.exp, isDefault: true, origin: 'student' });
+        S.verify.events = S.verify.events || [];
+        d.payEvents.forEach(function (x) { S.verify.seq = (S.verify.seq || 0) + 1; S.verify.events.push({ id: 'VER-CL-' + (1000 + S.verify.seq), ts: x.ts, amount: 1, result: x.result, note: x.note }); });
+        S.verify.status = 'Verified'; addNote('verify', 'Card verified', 'A simulated ₹1.00 verification was approved. No money moved.');
+      } else addNote('verify', 'Card verification skipped', 'You can run the ₹1 verification later in Billing & Payments.');
+      d.pw = d.pw2 = ''; d.cardNo = ''; d.cvv = ''; ui.otp = null; save(); ui.page = 'success'; render(); window.scrollTo(0, 0);
     });
   }, 1900);
 }
+
 function renderSuccess() {
   var p = S.profile;
   return [pubHeader(), h('main', { id: 'main', class: 'wizard' }, h('div', { class: 'card', style: 'text-align:center' },
     h('div', { style: 'width:64px;height:64px;border-radius:50%;background:var(--ok-l);color:var(--ok);display:grid;place-items:center;margin:0 auto 12px' }, icon('check')),
-    h('h1', null, 'Your demo account is ready'), h('p', { class: 'muted' }, 'Welcome, ' + p.displayName + '. This is a fictional account stored only in this browser.'),
+    h('h1', null, 'Your account is ready'), h('p', { class: 'muted' }, 'Welcome, ' + p.displayName + '. This is a fictional account stored only in this browser.'),
     h('dl', { class: 'dl', style: 'text-align:left;max-width:420px;margin:14px auto' }, [['Account ID', p.accountId], ['Username', p.username], ['Region', S.selectedRegion]].map(function (r) { return [h('dt', null, r[0]), h('dd', null, r[1])]; })),
     btn('Open Cloud Console', 'primary lg', function () { S.session = { type: 'user', at: new Date().toISOString() }; save(); ui.view = 'dashboard'; render(); toast('Signed in to the simulated console.', 'ok'); }))), footer()];
 }
@@ -759,24 +878,24 @@ function renderSignin() {
     var okId = id === S.profile.username.toLowerCase() || id === S.profile.email.toLowerCase();
     var check = !okId ? Promise.resolve(false) : S.auth ? hashPw(S.auth.salt, pw).then(function (hx) { return hx === S.auth.hash; }) : Promise.resolve(pw === SAMPLE_PW);
     check.then(function (ok) {
-      if (!ok) { err.textContent = 'These details do not match the demo account stored in this browser.'; pwIn.classList.add('bad'); pwIn.value = ''; pwIn.focus(); return; }
+      if (!ok) { err.textContent = 'These details do not match the account stored in this browser.'; pwIn.classList.add('bad'); pwIn.value = ''; pwIn.focus(); return; }
       S.session = { type: 'user', at: new Date().toISOString() }; save(); ui.view = 'dashboard'; render(); toast('Signed in to the simulated console.', 'ok');
     });
   }
   return [pubHeader(), h('main', { id: 'main', class: 'wizard', style: 'max-width:480px' }, h('form', { class: 'card', novalidate: 'novalidate', onsubmit: submit },
-    h('div', { class: 'row spread' }, h('h1', { style: 'margin:0' }, 'Sign in'), h('span', { class: 'chip' }, 'Demo mode')),
-    callout('warn', 'Local demo sign-in only. Credentials are checked against data in this browser and are never sent anywhere. This is not secure and not suitable for production.'),
+    h('div', { class: 'row spread' }, h('h1', { style: 'margin:0' }, 'Sign in'), ),
+    callout('warn', 'Local sign-in only. Credentials are checked against data in this browser and are never sent anywhere. This is not secure and not suitable for production.'),
     h('div', { class: 'fg' }, h('label', { for: 'si-id' }, 'Username or email'), idIn), h('div', { class: 'fg' }, h('label', { for: 'si-pw' }, 'Password'), h('div', { class: 'pwrow' }, pwIn, tog), err),
-    h('p', { class: 'hint' }, 'Sample profile: username ', h('b', { class: 'mono' }, 'alex.morgan.demo'), ' with public sample password ', h('b', { class: 'mono' }, SAMPLE_PW), '. If you created your own demo account, use its details.'),
+    h('p', { class: 'hint' }, 'Sample profile: username ', h('b', { class: 'mono' }, 'alex.morgan'), ' with public sample password ', h('b', { class: 'mono' }, SAMPLE_PW), '. If you created your own account, use its details.'),
     h('div', { class: 'row', style: 'margin-top:14px' }, h('button', { class: 'btn primary', type: 'submit' }, 'Sign in'), btn('Continue as Guest', '', startGuest)),
-    h('div', { class: 'row', style: 'margin-top:14px' }, btn('Return to signup', 'ghost sm', function () { go('signup'); }), btn('Forgot password? Demo recovery', 'ghost sm', recoveryDialog)))), footer()];
+    h('div', { class: 'row', style: 'margin-top:14px' }, btn('Return to signup', 'ghost sm', function () { go('signup'); }), btn('Forgot password? recovery', 'ghost sm', recoveryDialog)))), footer()];
 }
 function recoveryDialog() {
   formModal({
-    title: 'Demo account recovery', intro: 'No email is sent. Because this is a local demo, you can set a new password for the account stored in this browser by confirming its username. This is deliberately not secure.',
-    fields: [{ key: 'u', label: 'Demo username' }, { key: 'p', label: 'New demo password', type: 'password' }], submitLabel: 'Reset password',
+    title: 'Account recovery', intro: 'No email is sent. You can set a new password for the account stored in this browser by confirming its username. This is deliberately not secure.',
+    fields: [{ key: 'u', label: 'Username' }, { key: 'p', label: 'New password', type: 'password' }], submitLabel: 'Reset password',
     validate: function (v) { var e = {}; if (v.u.trim().toLowerCase() !== S.profile.username.toLowerCase()) e.u = 'That username is not stored in this browser.'; if (v.p.length < 8) e.p = 'Use at least 8 characters.'; return e; },
-    onSubmit: function (v) { var salt = String(Math.random()).slice(2, 12); hashPw(salt, v.p).then(function (hx) { S.auth = { salt: salt, hash: hx }; save(); addNote('security', 'Demo password reset', 'The local demo password was changed.'); save(); toast('Demo password reset for ' + S.profile.username + '.', 'ok'); }); }
+    onSubmit: function (v) { var salt = String(Math.random()).slice(2, 12); hashPw(salt, v.p).then(function (hx) { S.auth = { salt: salt, hash: hx }; save(); addNote('security', 'Password reset', 'The local password was changed.'); save(); toast('Password reset for ' + S.profile.username + '.', 'ok'); }); }
   });
 }
 
@@ -842,7 +961,7 @@ function buildShell() {
   var topbar = h('div', { class: 'topbar' },
     h('button', { class: 'btn iconbtn menubtn', 'aria-label': 'Toggle navigation menu', onclick: function () { $('.sidebar').classList.toggle('open'); } }, icon('menu')),
     brand(function () { nav('dashboard'); }), buildSearch(),
-    (function () { var s = select(REGIONS, S.selectedRegion, { class: 'regionsel', 'aria-label': 'Selected demo region', id: 'regionsel' }); s.addEventListener('change', function () { S.selectedRegion = s.value; logAct('Switched region to ' + s.value); commit(); toast('Region switched (simulated): ' + s.value, 'ok'); }); return s; })(),
+    (function () { var s = select(REGIONS, S.selectedRegion, { class: 'regionsel', 'aria-label': 'Selected region', id: 'regionsel' }); s.addEventListener('change', function () { S.selectedRegion = s.value; logAct('Switched region to ' + s.value); commit(); toast('Region switched (simulated): ' + s.value, 'ok'); }); return s; })(),
     h('span', { style: 'flex:1' }), themeBtn('hide-sm'),
     dropdown(h('button', { class: 'btn iconbtn', 'aria-label': 'Notifications', style: 'position:relative' }, icon('bell'), h('span', { class: 'badgecount', id: 'nbadge' }, '0')),
       function () { var n = notifications(), out = [h('div', { class: 'head' }, 'Notifications')]; if (!n.length) out.push(h('div', { class: 'head' }, 'You are all caught up.')); n.forEach(function (x) { out.push(mi(x.t, function () { if (x.tab) ui.billTab = x.tab; nav(x.v); }, x.s)); }); out.push(mi('Open Notification Center (' + unreadNotes() + ' unread)', function () { nav('notifications'); })); out.push(mi('Mark all as read', function () { ui.notifRead = true; S.notes.forEach(function (x) { x.read = true; }); save(); updateChrome(); })); return out; }),
@@ -855,7 +974,7 @@ function buildShell() {
     }),
     h('button', { class: 'btn hide-sm', onclick: logout }, icon('logout'), 'Logout'));
   var side = h('nav', { class: 'sidebar', 'aria-label': 'Console navigation' }, sideItems(),
-    h('div', { class: 'sep' }, 'Demo mode · all data fictional'));
+    h('div', { class: 'sep' }, 'CloudLab Free'));
   var main = h('main', { id: 'main', class: 'main', tabindex: '-1' });
   return { top: topbar, layout: h('div', { class: 'layout' }, side, main) };
 }
@@ -890,7 +1009,7 @@ function viewDashboard() {
   var items = [['Create a simulated virtual machine', !!S.flags.madeInstance], ['Create a storage bucket', !!S.flags.madeBucket], ['Check observability metrics', !!S.flags.obs], ['Review free-tier usage in Cost Management', !!S.flags.cost], ['Complete a lesson', Object.keys(S.lessons).length > 0]];
   var done = items.filter(function (i) { return i[1]; }).length;
   var res = [['Instances', ai.length, '#c74634'], ['Networks', S.networks.length, '#1d5fbf'], ['Buckets', S.buckets.length, '#17803d'], ['Databases', S.databases.length, '#a5530a']];
-  return [h('div', { class: 'pagehead' }, h('div', null, h('h1', null, 'Welcome, ' + w.name), h('p', { class: 'muted', style: 'margin:0' }, 'Account ID: ' + w.id + ' · Region: ' + S.selectedRegion + (w.guest ? ' · Guest session' : ''))), h('span', { class: 'chip' }, 'Demo mode')),
+  return [h('div', { class: 'pagehead' }, h('div', null, h('h1', null, 'Welcome, ' + w.name), h('p', { class: 'muted', style: 'margin:0' }, 'Account ID: ' + w.id + ' · Region: ' + S.selectedRegion + (w.guest ? ' · Guest session' : ''))), ),
     b.warn ? callout(b.over ? 'err' : 'warn', h('strong', null, b.over ? 'Simulated budget exceeded. ' : 'Simulated budget threshold crossed. '), 'Your simulated usage estimate is ' + inr(b.total) + ' against a ' + inr(S.budget.limit) + ' limit. This is a teaching alert only — nothing real is charged. ', btn('Open Cost Management', 'sm', function () { nav('cost'); })) : null,
     h('div', { class: 'grid g4', style: 'margin-bottom:16px' }, [
       ['Compute instances', ai.length + ' (' + run + ' running)'], ['Storage utilization', pct(used, QUOTA.storageGB) + '% · ' + used.toFixed(1) + ' GB'], ['Virtual networks', String(S.networks.length)], ['Monthly usage estimate', null]].map(function (s, i) { return h('div', { class: 'card stat' }, h('span', { class: 'l' }, s[0]), h('span', { class: 'v' }, i === 3 ? money(c.total) : s[1])); })),
@@ -1114,8 +1233,8 @@ function viewObservability() {
     var avg = function (key, base, amp, max) { if (!targets.length) return new Array(24).fill(0); var all = targets.map(function (i) { return series(i.id + key, 24, base + hashStr(i.id + key) % 20, amp, max); }); return all[0].map(function (_, k) { return Math.round(all.reduce(function (a, s) { return a + s[k]; }, 0) / all.length * 10) / 10; }); };
     var cpu = avg('cpu', 20, 14, 100), mem = avg('mem', 35, 10, 100), net = avg('net', 200, 120, 1000), sto = series('sto' + used, 24, used, 1.5, 100).map(function (v) { return Math.min(100, v); });
     var cards = [['CPU utilization', cpu, '%', '#c74634', 100], ['Memory utilization', mem, '%', '#1d5fbf', 100], ['Storage used (of quota)', sto, '%', '#17803d', 100], ['Network throughput', net, 'KB/s', '#a5530a', 1000]];
-    body.replaceChildren(!targets.length ? callout('warn', 'No running instance is selected, so CPU, memory and network are flat at zero. Start an instance in Compute to see activity.') : null,
-      h('div', { class: 'grid g2' }, cards.map(function (c) { return h('div', { class: 'card chartbox' }, h('div', { class: 'row spread' }, h('h3', null, c[0]), h('span', { class: 'badge gray' }, 'Latest: ' + c[1][23] + ' ' + c[2])), lineChart(c[0], c[1], c[2], c[3], c[4])); })));
+    body.replaceChildren.apply(body, flat([!targets.length ? callout('warn', 'No running instance is selected, so CPU, memory and network are flat at zero. Start an instance in Compute to see activity.') : null,
+      h('div', { class: 'grid g2' }, cards.map(function (c) { return h('div', { class: 'card chartbox' }, h('div', { class: 'row spread' }, h('h3', null, c[0]), h('span', { class: 'badge gray' }, 'Latest: ' + c[1][23] + ' ' + c[2])), lineChart(c[0], c[1], c[2], c[3], c[4])); }))]));
   }
   function logs() {
     var q = ui.logQ.toLowerCase(), all = genLogs().filter(function (l) { return (ui.logSev === 'ALL' || l.sev === ui.logSev) && (!q || l.msg.toLowerCase().indexOf(q) >= 0); });
@@ -1137,7 +1256,7 @@ function viewObservability() {
 function viewCost() {
   var c = costs(), b = budgetState(), limIn = h('input', { id: 'b-lim', type: 'number', value: String(S.budget.limit), min: '1', step: 'any' }), thIn = h('input', { id: 'b-th', type: 'number', value: String(S.budget.threshold), min: '10', max: '100' }), er = h('div', { class: 'err', role: 'alert' });
   var parts = Object.keys(c.parts), max = Math.max.apply(null, parts.map(function (k) { return c.parts[k]; }).concat([1]));
-  return [pageHead('Cost Management', 'Simulated usage and budget', [btn('Simulate extra usage (+₹800)', '', function () { S.extraUsage += 800; logAct('Simulated extra usage added'); commit(); toast('Added ₹800 of simulated usage.', 'warn'); }), btn('Reset demo usage', 'danger', function () { confirmDlg('Reset demo usage?', 'This clears simulated extra usage and restores the default budget settings. Your resources are not changed.', 'Reset usage', function () { S.extraUsage = 0; S.budget = { limit: 4000, threshold: 80 }; logAct('Demo usage reset'); commit(); toast('Demo usage reset.', 'ok'); }); })]),
+  return [pageHead('Cost Management', 'Simulated usage and budget', [btn('Simulate extra usage (+₹800)', '', function () { S.extraUsage += 800; logAct('Simulated extra usage added'); commit(); toast('Added ₹800 of simulated usage.', 'warn'); }), btn('Reset usage', 'danger', function () { confirmDlg('Reset usage?', 'This clears simulated extra usage and restores the default budget settings. Your resources are not changed.', 'Reset usage', function () { S.extraUsage = 0; S.budget = { limit: 4000, threshold: 80 }; logAct('Usage reset'); commit(); toast('Usage reset.', 'ok'); }); })]),
     callout('info', 'Everything on this page is SIMULATED. It cannot incur, show or prevent real charges.'),
     b.warn ? callout(b.over ? 'err' : 'warn', h('strong', null, b.over ? 'Educational warning: simulated budget exceeded. ' : 'Educational warning: threshold of ' + S.budget.threshold + '% reached. '), 'Estimate ' + inr(b.total) + ' vs budget limit ' + inr(S.budget.limit) + '. In a real cloud, this is when an alert would tell you to review resources.') : callout('ok', 'Simulated usage is below your ' + S.budget.threshold + '% alert threshold (' + inr(b.thAmt) + ').'),
     h('div', { class: 'grid g3', style: 'margin-bottom:16px' }, [['Monthly usage estimate', money(c.total)], ['Budget limit', money(S.budget.limit)], ['Free-tier credit applied', money(Math.min(c.total, c.total - S.extraUsage))]].map(function (s) { return h('div', { class: 'card stat' }, h('span', { class: 'l' }, s[0]), h('span', { class: 'v' }, s[1])); })),
@@ -1151,19 +1270,19 @@ function viewCost() {
 /* ----- ACCOUNT ----- */
 function viewAccount() {
   var w = who(), p = S.profile;
-  var out = [pageHead('Account Settings', 'Demo profile and data controls', [])];
-  out.push(callout('warn', 'Privacy notice: demo data is kept in your browser\'s localStorage, where it can be inspected or modified by anyone using this browser profile. Passwords are never stored in plaintext. Do not enter real personal or payment information.'));
-  if (w.guest) out.push(callout('info', 'You are in a guest session. Profile editing is disabled. Create a demo account to personalize your profile.', ' ', btn('Create demo account', 'sm primary', function () { logout(); go('signup'); })));
+  var out = [pageHead('Account Settings', 'Profile and data controls', [])];
+  out.push(callout('warn', 'Privacy notice: data is kept in your browser\'s localStorage, where it can be inspected or modified by anyone using this browser profile. Passwords are never stored in plaintext. Do not enter real personal or payment information.'));
+  if (w.guest) out.push(callout('info', 'You are in a guest session. Profile editing is disabled. Create an account to personalize your profile.', ' ', btn('Create account', 'sm primary', function () { logout(); go('signup'); })));
   var dn = h('input', { id: 'a-dn', type: 'text', value: p.displayName, disabled: w.guest }), lang = select(LANGS, p.language, { id: 'a-lang', disabled: w.guest }), lvl = select(['Beginner', 'Intermediate', 'Advanced'], p.level, { id: 'a-lvl', disabled: w.guest }), reg = select(REGIONS, S.selectedRegion, { id: 'a-reg' }), er = h('div', { class: 'err', role: 'alert' });
   out.push(h('div', { class: 'grid g2' },
     h('form', { class: 'card', novalidate: 'novalidate', onsubmit: function (e) { e.preventDefault(); if (w.guest) { S.selectedRegion = reg.value; commit(); toast('Region updated.', 'ok'); return; } var n = dn.value.trim(); if (!n || n.length > 40) { er.textContent = 'Display name must be 1–40 characters.'; dn.focus(); return; } er.textContent = ''; p.displayName = n; p.language = lang.value; p.level = lvl.value; S.selectedRegion = reg.value; logAct('Profile updated'); commit(); toast('Profile saved.', 'ok'); } },
-      h('h2', null, 'Profile'), h('dl', { class: 'dl', style: 'margin-bottom:14px' }, [['Account ID', w.id], ['Username', w.guest ? '(guest)' : p.username], ['Session', w.guest ? 'Guest' : 'Demo account']].map(function (r) { return [h('dt', null, r[0]), h('dd', null, r[1])]; })),
+      h('h2', null, 'Profile'), h('dl', { class: 'dl', style: 'margin-bottom:14px' }, [['Account ID', w.id], ['Username', w.guest ? '(guest)' : p.username], ['Session', w.guest ? 'Guest' : 'Account']].concat(w.guest || !p.phone ? [] : [['Account type', p.acctType || 'Personal'], ['Phone (masked)', p.phone + (p.phoneVerified ? ' · verified' : '')], ['Support plan', (p.plan || 'Basic') + ' (free)']]).map(function (r) { return [h('dt', null, r[0]), h('dd', null, r[1])]; })),
       h('div', { class: 'fg' }, h('label', { for: 'a-dn' }, 'Display name'), dn, er), h('div', { class: 'fg' }, h('label', { for: 'a-lang' }, 'Language'), lang), h('div', { class: 'fg' }, h('label', { for: 'a-lvl' }, 'Learning experience'), lvl), h('div', { class: 'fg' }, h('label', { for: 'a-reg' }, 'Home region (simulated)'), reg), h('button', { class: 'btn primary', type: 'submit' }, 'Save changes')),
     h('div', { class: 'card' }, h('h2', null, 'Data controls'), h('p', { class: 'muted' }, 'Storage status: ' + (storageOK ? 'localStorage available.' : 'localStorage unavailable — using in-memory state for this tab.')),
       h('div', { class: 'row', style: 'flex-direction:column;align-items:stretch' },
         btn('View stored data (non-sensitive)', '', function () { openModal({ title: 'What this simulator stores', wide: true, body: [callout('info', 'This is exactly what is saved in localStorage under the key "' + KEY + '". It contains no plaintext password.'), h('pre', { class: 'json' }, JSON.stringify(S, null, 2))], actions: [{ label: 'Close', cls: 'primary' }] }); }),
-        btn('Reset demo data to the sample state', '', function () { confirmDlg('Reset demo data?', 'This restores the original sample resources, activity, lessons and budget. You stay signed in.', 'Reset demo data', function () { var s = S.session; S = initialState(); S.session = s; ui.q = { compute: '', storage: '', databases: '', networking: '' }; ui.busy = {}; ui.co = null; save(); render(); toast('Demo data restored to the sample state.', 'ok'); }, false); }),
-        btn('Erase all simulator data', 'danger', function () { confirmDlg('Erase all simulator data?', 'This permanently removes everything this simulator stored in your browser, including your demo profile, and signs you out.', 'Erase everything', function () { try { localStorage.removeItem(KEY); } catch (e) { } S = initialState(); ui.co = null; ui.page = 'landing'; render(); window.scrollTo(0, 0); toast('All simulator data erased.', 'ok'); }); })))));
+        btn('Reset data to the sample state', '', function () { confirmDlg('Reset data?', 'This restores the original sample resources, activity, lessons and budget. You stay signed in.', 'Reset data', function () { var s = S.session; S = initialState(); S.session = s; ui.q = { compute: '', storage: '', databases: '', networking: '' }; ui.busy = {}; ui.co = null; save(); render(); toast('Data restored to the sample state.', 'ok'); }, false); }),
+        btn('Erase all simulator data', 'danger', function () { confirmDlg('Erase all simulator data?', 'This permanently removes everything this simulator stored in your browser, including your profile, and signs you out.', 'Erase everything', function () { try { localStorage.removeItem(KEY); } catch (e) { } S = initialState(); ui.co = null; ui.page = 'landing'; render(); window.scrollTo(0, 0); toast('All simulator data erased.', 'ok'); }); })))));
   return out;
 }
 
@@ -1202,7 +1321,7 @@ var BTABS = [['overview', 'Billing Overview'], ['methods', 'Payment Methods'], [
 
 function r2(n) { return Math.round(n * 100) / 100; }
 function inr(n) { var v = Number(n) || 0; return (v < 0 ? '-' : '') + '₹' + Math.abs(v).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function demoPayNotice() { return h('div', { class: 'paynotice', role: 'note' }, 'DEMO PAYMENT ENVIRONMENT — No real money is transferred. Do not enter actual payment credentials.'); }
+function demoPayNotice() { return null; }
 function monthKey(iso) { return String(iso).slice(0, 7); }
 function lastMonths(n) {
   var d = new Date(), out = [];
@@ -1264,12 +1383,12 @@ function csvCell(v) { if (typeof v === 'number') return String(v); var s = Strin
 function downloadText(name, text, type) {
   try {
     var blob = new Blob([text], { type: type + ';charset=utf-8' }), url = URL.createObjectURL(blob), a = h('a', { href: url, download: name });
-    document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); URL.revokeObjectURL(url); }, 800); toast('Exported ' + name + ' (local file, demo data only).', 'ok');
+    document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); URL.revokeObjectURL(url); }, 800); toast('Exported ' + name + ' (local file, data only).', 'ok');
   } catch (e) { toast('Export failed: ' + e.message, 'err'); }
 }
 function invoiceCsv(list) {
   var head = ['Invoice number', 'Invoice date', 'Transaction ID', 'Reference', 'Product', 'Quantity', 'Billing name', 'Billing address', 'Subtotal (INR)', 'Discount (INR)', 'Example tax (INR)', 'Total (INR)', 'Payment status', 'Notice'];
-  var rows = list.map(function (p) { var t = p.t, inv = p.inv, b = t.billing || {}; return [inv.number, inv.ts.slice(0, 10), t.id, t.ref, t.product, t.qty || 1, b.name, [b.addr, b.city, b.state, b.pin, b.country].join(', '), t.sub, t.disc, t.tax, t.total, t.status + ' (simulated)', 'DEMO DOCUMENT - NOT VALID FOR TAX OR REIMBURSEMENT']; });
+  var rows = list.map(function (p) { var t = p.t, inv = p.inv, b = t.billing || {}; return [inv.number, inv.ts.slice(0, 10), t.id, t.ref, t.product, t.qty || 1, b.name, [b.addr, b.city, b.state, b.pin, b.country].join(', '), t.sub, t.disc, t.tax, t.total, t.status + ' (simulated)', 'DOCUMENT - NOT VALID FOR TAX OR REIMBURSEMENT']; });
   return [head].concat(rows).map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
 }
 function allInvoices() { return S.bill.invoices.map(function (inv) { return { inv: inv, t: txnById(inv.txnId) }; }).filter(function (p) { return p.t; }).sort(function (a, b) { return new Date(b.inv.ts) - new Date(a.inv.ts); }); }
@@ -1282,14 +1401,14 @@ function printNode(node) {
 function invoiceDoc(t, inv) {
   var b = t.billing || {}, status = t.status === 'Refunded' ? 'Refunded — simulated' : t.status === 'Successful' ? 'Paid — simulated' : t.status + ' — simulated';
   return h('div', { class: 'invoice' },
-    h('div', { class: 'row spread' }, h('div', null, h('h2', { style: 'margin:0' }, 'CloudLab Learning'), h('div', { class: 'small' }, 'Fictional merchant · demo document')), h('div', { style: 'text-align:right' }, h('h2', { style: 'margin:0' }, 'INVOICE'), h('div', { class: 'mono' }, inv.number))),
-    h('div', { class: 'invwm' }, 'DEMO DOCUMENT — NOT VALID FOR TAX OR REIMBURSEMENT'),
+    h('div', { class: 'row spread' }, h('div', null, h('h2', { style: 'margin:0' }, 'CloudLab Learning'), h('div', { class: 'small' }, 'Fictional merchant · document')), h('div', { style: 'text-align:right' }, h('h2', { style: 'margin:0' }, 'INVOICE'), h('div', { class: 'mono' }, inv.number))),
+    h('div', { class: 'invwm' }, 'DOCUMENT — NOT VALID FOR TAX OR REIMBURSEMENT'),
     t.status === 'Refunded' ? h('div', { class: 'invwm' }, 'SIMULATED REFUND — NO MONEY MOVED') : null,
     h('dl', { class: 'dl' }, [['Invoice date', fmtDate(inv.ts)], ['Transaction ID', t.id], ['Transaction reference', t.ref], ['Payment method', t.methodLabel], ['Payment status', status], ['Billed to', b.name], ['Billing address', [b.addr, b.city, b.state, b.pin, b.country].join(', ')]].map(function (r) { return [h('dt', null, r[0]), h('dd', null, r[1])]; })),
     h('table', { class: 'invt' }, h('caption', { class: 'sr' }, 'Line items'), h('thead', null, h('tr', null, h('th', null, 'Description'), h('th', { class: 'r' }, 'Qty'), h('th', { class: 'r' }, 'Unit price'), h('th', { class: 'r' }, 'Amount'))),
       h('tbody', null, h('tr', null, h('td', null, t.product), h('td', { class: 'r' }, String(t.qty || 1)), h('td', { class: 'r' }, inr(t.sub)), h('td', { class: 'r' }, inr(t.sub))))),
     h('div', { class: 'tot' }, h('div', null, h('span', null, 'Subtotal'), h('span', null, inr(t.sub))), h('div', null, h('span', null, 'Discount' + (t.promo ? ' (' + t.promo + ')' : '')), h('span', null, inr(-t.disc))), h('div', null, h('span', null, 'Example tax (18%, fictional)'), h('span', null, inr(t.tax))), h('div', { class: 'grand' }, h('span', null, 'Total'), h('span', null, inr(t.total)))),
-    h('p', { class: 'small', style: 'margin-top:14px' }, 'This is an educational demo document generated locally. It contains no real tax registration number and is not an official tax document.'));
+    h('p', { class: 'small', style: 'margin-top:14px' }, 'This is an educational document generated locally. It contains no real tax registration number and is not an official tax document.'));
 }
 function openInvoice(t) {
   var inv = invoiceFor(t.id); if (!inv) { toast('Only successful purchases have invoices.', 'warn'); return; }
@@ -1315,21 +1434,21 @@ function bOverview() {
     h('div', { class: 'row', style: 'margin-bottom:16px' }, btn('Start a simulated checkout', 'primary', function () { setBillTab('checkout'); }),
       btn('View latest mock invoice', '', function () { if (latest) openInvoice(latest.t); else toast('No invoices yet. Complete a successful simulated checkout first.', 'warn'); }),
       btn('Download latest invoice (CSV)', '', function () { if (latest) downloadText(latest.inv.number + '.csv', invoiceCsv([latest]), 'text/csv'); else toast('No invoices yet.', 'warn'); }),
-      btn('Reset demo billing history', 'danger', resetBilling)),
+      btn('Reset billing history', 'danger', resetBilling)),
     h('div', { class: 'grid g2' },
       h('div', { class: 'card chartbox' }, h('h2', null, 'Monthly billing (simulated purchases)'), barChart(months, 'Net simulated purchases by month', '#c74634'), h('p', { class: 'muted small' }, 'Shows successful purchases net of refunds. Refunded amounts are removed. All figures SIMULATED.')),
       h('div', { class: 'card' }, h('div', { class: 'row spread' }, h('h2', { style: 'margin:0' }, 'Recent transactions'), btn('View all', 'sm', function () { setBillTab('history'); })),
         h('ul', { class: 'feed' }, rows.map(function (t) { return h('li', null, h('div', { class: 'row spread' }, h('span', { class: 'mono' }, t.id), badge(t.status, t.status)), h('div', null, t.product + ' · ' + inr(t.total)), h('div', { class: 'muted small' }, fmtDate(t.ts))); })))),
     h('h2', { style: 'margin:22px 0 10px' }, 'Three separate things — never mixed together'),
     h('div', { class: 'grid g3' },
-      h('div', { class: 'card' }, h('h3', null, '1. Simulated product purchases'), h('div', { class: 'quota' }, inr(st.purchases)), h('p', { class: 'muted small' }, 'Fictional lab products bought through the demo checkout. This month: ' + inr(bs.spent) + '.'), btn('Open history', 'sm', function () { setBillTab('history'); })),
+      h('div', { class: 'card' }, h('h3', null, '1. Simulated product purchases'), h('div', { class: 'quota' }, inr(st.purchases)), h('p', { class: 'muted small' }, 'Fictional lab products bought through the checkout. This month: ' + inr(bs.spent) + '.'), btn('Open history', 'sm', function () { setBillTab('history'); })),
       h('div', { class: 'card' }, h('h3', null, '2. Simulated cloud resource usage'), h('div', { class: 'quota' }, inr(c.total)), h('p', { class: 'muted small' }, 'A teaching estimate from your mock VMs, storage and databases. It does not generate real charges and is not part of purchases.'), btn('Open Cost Management', 'sm', function () { nav('cost'); })),
       h('div', { class: 'card' }, h('h3', null, '3. Educational free-tier quotas'), h('div', { class: 'quota' }, activeInstances().length + '/' + QUOTA.instances), h('p', { class: 'muted small' }, 'Example quota limits used to teach how free tiers work (instances shown). Not real entitlements.'), btn('See quota usage', 'sm', function () { setBillTab('freetier'); }))),
     callout('info', 'Everything here is a simulation. No bank, card network or payment provider is contacted, and mock cloud resources never create real charges.')
   ];
 }
 function resetBilling() {
-  confirmDlg('Reset demo billing history?', 'This restores the original sample transactions, invoices, refunds, payment methods and billing budget. Your cloud resources are not changed.', 'Reset billing', function () { S.bill = initialState().bill; S.verify = initialState().verify; ui.co = null; ui.hf = { q: '', status: 'ALL', from: '', to: '', min: '', max: '' }; logAct('Demo billing history reset'); commit(); toast('Billing demo restored to the initial sample state.', 'ok'); });
+  confirmDlg('Reset billing history?', 'This restores the original sample transactions, invoices, refunds, payment methods and billing budget. Your cloud resources are not changed.', 'Reset billing', function () { S.bill = initialState().bill; S.verify = initialState().verify; ui.co = null; ui.hf = { q: '', status: 'ALL', from: '', to: '', min: '', max: '' }; logAct('Billing history reset'); commit(); toast('Billing restored to the initial sample state.', 'ok'); });
 }
 
 /* ---------- Payment Methods ---------- */
@@ -1342,43 +1461,43 @@ function payCard(m, big) {
 }
 function useDemoCard() {
   var have = S.bill.methods.map(function (m) { return m.last4 + m.brand; }), d = DEMO_CARDS.filter(function (c) { return have.indexOf(c.last4 + c.brand) < 0; })[0];
-  if (!d) { toast('All predefined demo cards have already been added.', 'warn'); return null; }
+  if (!d) { toast('All predefined cards have already been added.', 'warn'); return null; }
   var m = { id: uid('pm'), brand: d.brand, last4: d.last4, holder: d.holder, exp: d.exp, isDefault: S.bill.methods.length === 0, origin: 'student' };
-  S.bill.methods.push(m); logAct('Demo card added: ' + methodLabel(m)); commit(); toast('Demo card added (SIMULATED — NOT A REAL CARD).', 'ok'); return m;
+  S.bill.methods.push(m); logAct('Card added: ' + methodLabel(m)); commit(); toast('Card added (SIMULATED — NOT A REAL CARD).', 'ok'); return m;
 }
 function methodForm(m) {
   var yr = new Date().getFullYear(), years = [], months = []; for (var i = 0; i < 9; i++) years.push(String(yr + i)); for (var k = 1; k <= 12; k++) months.push(String(k).padStart(2, '0'));
   var ex = m ? m.exp.split('/') : ['12', String(yr + 4).slice(2)];
   formModal({
-    title: m ? 'Edit simulated payment method' : 'Add simulated payment method', submitLabel: m ? 'Save changes' : 'Add demo card',
+    title: m ? 'Edit simulated payment method' : 'Add simulated payment method', submitLabel: m ? 'Save changes' : 'Add card',
     intro: 'SIMULATED — NOT A REAL CARD. This form deliberately has no card number, CVV or PIN field. A random masked preview number is generated for you. Use a fictional cardholder name.',
-    fields: [{ key: 'holder', label: 'Cardholder name (fictional)', value: m ? m.holder : 'Demo Student' }, { key: 'brand', label: 'Demo card brand', type: 'select', options: BRANDS.map(function (b) { return b.id; }), value: m ? m.brand : BRANDS[0].id },
+    fields: [{ key: 'holder', label: 'Cardholder name (fictional)', value: m ? m.holder : 'Student' }, { key: 'brand', label: 'Card brand', type: 'select', options: BRANDS.map(function (b) { return b.id; }), value: m ? m.brand : BRANDS[0].id },
       { key: 'mm', label: 'Expiry month', type: 'select', options: months, value: ex[0] }, { key: 'yy', label: 'Expiry year', type: 'select', options: years.map(function (y) { return { v: y.slice(2), l: y }; }), value: ex[1] }],
     validate: function (v) { var e = {}, n = v.holder.trim(); if (n.length < 2 || n.length > 30 || !/^[A-Za-z][A-Za-z .'-]*$/.test(n)) e.holder = 'Use 2–30 letters. Never type card numbers or other payment details here.'; return e; },
     onSubmit: function (v) {
       var exp = v.mm + '/' + v.yy;
-      if (m) { m.holder = v.holder.trim(); m.brand = v.brand; m.exp = exp; logAct('Demo card updated: ' + methodLabel(m)); commit(); toast('Payment method updated.', 'ok'); return; }
+      if (m) { m.holder = v.holder.trim(); m.brand = v.brand; m.exp = exp; logAct('Card updated: ' + methodLabel(m)); commit(); toast('Payment method updated.', 'ok'); return; }
       var nm = { id: uid('pm'), brand: v.brand, last4: String(1000 + Math.floor(Math.random() * 8999)), holder: v.holder.trim(), exp: exp, isDefault: S.bill.methods.length === 0, origin: 'student' };
-      S.bill.methods.push(nm); logAct('Demo card added: ' + methodLabel(nm)); commit(); toast('Demo card added with a random masked preview number.', 'ok');
+      S.bill.methods.push(nm); logAct('Card added: ' + methodLabel(nm)); commit(); toast('Card added with a random masked preview number.', 'ok');
     }
   });
 }
 function bMethods() {
   var ms = S.bill.methods;
   return [callout('warn', h('strong', null, 'SIMULATED — NOT A REAL CARD. '), 'These are fictional test cards for learning. This app never asks for or stores real card numbers, CVV codes, PINs or banking credentials.'),
-    h('div', { class: 'row', style: 'margin-bottom:14px' }, btn('Use Demo Card', 'primary', useDemoCard), btn('Add simulated method', '', function () { methodForm(null); })),
+    h('div', { class: 'row', style: 'margin-bottom:14px' }, btn('Use Card', 'primary', useDemoCard), btn('Add simulated method', '', function () { methodForm(null); })),
     ms.length ? h('div', { class: 'grid g2' }, ms.map(function (m) {
       return h('div', { class: 'card' }, payCard(m), h('div', { class: 'small muted', style: 'margin:8px 0' }, methodLabel(m) + (m.origin === 'sample' ? ' · sample data' : ' · created by you')),
         h('div', { class: 'acts' }, m.isDefault ? h('span', { class: 'badge ok' }, 'Default method') : btn('Make default', 'sm', function () { S.bill.methods.forEach(function (x) { x.isDefault = x === m; }); logAct('Default payment method: ' + methodLabel(m)); commit(); toast('Default method updated.', 'ok'); }),
           btn('Edit', 'sm', function () { methodForm(m); }),
-          btn('Remove', 'sm danger', function () { confirmDlg('Remove payment method?', 'Remove ' + methodLabel(m) + '? This only deletes the fictional demo record.', 'Remove', function () { var was = m.isDefault; S.bill.methods = S.bill.methods.filter(function (x) { return x !== m; }); if (was && S.bill.methods[0]) S.bill.methods[0].isDefault = true; if (ui.co && ui.co.method === m.id) ui.co.method = null; logAct('Demo card removed'); commit(); toast('Payment method removed.', 'ok'); }); })));
-    })) : emptyState('No payment methods', 'Add a fictional demo card to try the simulated checkout.', btn('Use Demo Card', 'primary', useDemoCard))];
+          btn('Remove', 'sm danger', function () { confirmDlg('Remove payment method?', 'Remove ' + methodLabel(m) + '? This only deletes the fictional record.', 'Remove', function () { var was = m.isDefault; S.bill.methods = S.bill.methods.filter(function (x) { return x !== m; }); if (was && S.bill.methods[0]) S.bill.methods[0].isDefault = true; if (ui.co && ui.co.method === m.id) ui.co.method = null; logAct('Card removed'); commit(); toast('Payment method removed.', 'ok'); }); })));
+    })) : emptyState('No payment methods', 'Add a fictional card to try the simulated checkout.', btn('Use Card', 'primary', useDemoCard))];
 }
 
 /* ---------- Simulated Checkout ---------- */
 function newCo() {
   var dm = S.bill.methods.filter(function (m) { return m.isDefault; })[0];
-  return { step: 1, product: null, name: who().guest ? 'Guest Learner' : S.profile.displayName, addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India', method: dm ? dm.id : null, promo: '', applied: null, promoMsg: '', scenario: 'DEMO-SUCCESS', agree: false, err: {} };
+  return { step: 1, product: null, name: who().guest ? 'Guest Learner' : S.profile.displayName, addr: '221 Example Road', city: 'Sampleville', state: 'Sample State', pin: '000001', country: 'India', method: dm ? dm.id : null, promo: '', applied: null, promoMsg: '', scenario: 'PAY-SUCCESS', agree: false, err: {} };
 }
 function vco(step) {
   var c = ui.co, e = {};
@@ -1389,8 +1508,8 @@ function vco(step) {
     if (!c.city.trim()) e.city = 'Enter a city.'; if (!c.state.trim()) e.state = 'Enter a state or region.';
     if (!/^\d{6}$/.test(c.pin.trim())) e.pin = 'Enter a 6-digit PIN code (fictional, e.g. 000001).'; if (!c.country.trim()) e.country = 'Enter a country.';
   }
-  if (step === 3 && !S.bill.methods.some(function (m) { return m.id === c.method; })) e.method = 'Select a simulated payment method (or use the demo card).';
-  if (step === 4 && !c.agree) e.agree = 'Please accept the demo purchase confirmation to continue.';
+  if (step === 3 && !S.bill.methods.some(function (m) { return m.id === c.method; })) e.method = 'Select a simulated payment method (or use the card).';
+  
   return e;
 }
 function cfield(label, key, hint) {
@@ -1421,15 +1540,15 @@ function bCheckout() {
     body = [h('h2', null, 'Step 3 — Payment method, promo and test scenario'),
       h('fieldset', { style: 'border:0;padding:0;margin:0 0 14px' }, h('legend', { style: 'font-weight:700;margin-bottom:6px' }, 'Simulated payment method'),
         ms.length ? ms.map(function (m) { return h('label', { class: 'mrow', style: 'font-weight:500' }, h('input', { type: 'radio', name: 'pm', value: m.id, checked: c.method === m.id, onchange: function () { c.method = m.id; } }), h('span', null, methodLabel(m), h('span', { class: 'muted small' }, ' · ' + m.holder + ' · exp ' + m.exp + (m.isDefault ? ' · default' : '')))); })
-          : emptyState('No payment method yet', 'Add the predefined fictional demo card to continue.', btn('Use Demo Card', 'primary', function () { var m = useDemoCard(); if (m) { c.method = m.id; renderMain(); } })),
+          : emptyState('No payment method yet', 'Add the predefined fictional card to continue.', btn('Use Card', 'primary', function () { var m = useDemoCard(); if (m) { c.method = m.id; renderMain(); } })),
         c.err.method ? h('div', { class: 'err', role: 'alert' }, c.err.method) : null),
       h('div', { class: 'fg' }, h('label', { for: 'co-promo' }, 'Mock promotional code (optional)'), h('div', { class: 'pwrow' }, pin, btn('Apply', '', applyPromo)),
         h('div', { class: 'hint' }, 'Try LEARN10 (10% off), SAVE50 (₹50 off) or BUNDLE20 (20% off the bundle). These are fictional.'), c.promoMsg ? h('div', { class: 'small', style: 'color:var(--ok);font-weight:600', role: 'status' }, c.promoMsg) : null, h('div', { class: 'err', id: 'co-promo-e', role: 'alert' }, c.err.promo || '')),
-      h('div', { class: 'fg' }, h('label', { for: 'co-scn' }, 'Test scenario (decides the simulated outcome)'), sc, h('div', { class: 'hint' }, 'DEMO-SUCCESS → approved · DEMO-DECLINED → card declined · DEMO-ERROR → processing error. Handled locally; no payment provider is contacted. You can also type these codes into the promo box.'))];
+      h('div', { class: 'fg' }, h('label', { for: 'co-scn' }, 'Test scenario (decides the simulated outcome)'), sc, h('div', { class: 'hint' }, 'PAY-SUCCESS → approved · PAY-DECLINED → card declined · PAY-ERROR → processing error. Handled locally; no payment provider is contacted. You can also type these codes into the promo box.'))];
   } else {
     var pm = S.bill.methods.filter(function (m) { return m.id === c.method; })[0];
     body = [h('h2', null, 'Step 4 — Review and simulate payment'), h('dl', { class: 'dl' }, [['Product', prod ? prod.name : '—'], ['Billing name', c.name], ['Billing address', [c.addr, c.city, c.state, c.pin, c.country].join(', ')], ['Payment method', pm ? methodLabel(pm) : '—'], ['Promo code', c.applied || 'None'], ['Test scenario', c.scenario]].map(function (r) { return [h('dt', null, r[0]), h('dd', null, r[1])]; })),
-      h('label', { class: 'checkrow', style: 'margin-top:16px;font-weight:600' }, h('input', { type: 'checkbox', checked: c.agree, onchange: function (e) { c.agree = e.target.checked; } }), 'I understand this is a DEMO purchase. No real money will be transferred and no real payment is being made.'),
+      null,
       c.err.agree ? h('div', { class: 'err', role: 'alert' }, c.err.agree) : null];
   }
   var nav2 = h('div', { class: 'row spread', style: 'margin-top:16px' }, c.step > 1 ? btn('Back', '', function () { c.step--; c.err = {}; renderMain(); }) : btn('Reset checkout', '', function () { ui.co = newCo(); renderMain(); }),
@@ -1444,20 +1563,20 @@ function simulatePayment() {
   for (var s = 1; s <= 4; s++) { var e = vco(s); if (Object.keys(e).length) { c.step = s; c.err = e; renderMain(); toast('Please fix the highlighted items before simulating payment.', 'err'); return; } }
   ui.paying = true;
   var prod = PRODUCTS.filter(function (p) { return p.id === c.product; })[0], o = calcOrder(prod, c.applied), pm = S.bill.methods.filter(function (m) { return m.id === c.method; })[0];
-  var bar = h('i', { style: 'width:0' }), msg = h('p', { id: 'pmsg', role: 'status' }, 'Contacting simulated payment processor (local only)…'), i = 0, texts = ['Contacting simulated payment processor (local only)…', 'Verifying fictional demo card…', 'Finalizing simulated result…'];
+  var bar = h('i', { style: 'width:0' }), msg = h('p', { id: 'pmsg', role: 'status' }, 'Contacting simulated payment processor (local only)…'), i = 0, texts = ['Contacting simulated payment processor (local only)…', 'Verifying fictional card…', 'Finalizing simulated result…'];
   openModal({ title: 'Processing simulated payment', dismissible: false, body: h('div', null, msg, h('div', { class: 'prog', role: 'progressbar', 'aria-label': 'Simulated payment progress' }, bar), h('p', { class: 'small muted', style: 'margin-top:10px' }, 'No real payment is being processed. Nothing leaves your browser.')) });
   var iv = setInterval(function () { i++; bar.style.width = Math.min(100, i * 34) + '%'; if (texts[i]) msg.textContent = texts[i]; }, 700);
   setTimeout(function () {
     clearInterval(iv); ui.paying = false; var top = modalStack[modalStack.length - 1]; if (top) top.close();
-    var B = S.bill, id = 'TXN-DEMO-' + (B.seq++), ts = new Date().toISOString(), before = billBudgetState();
-    var status = c.scenario === 'DEMO-SUCCESS' ? 'Successful' : 'Failed', reason = c.scenario === 'DEMO-DECLINED' ? 'Card declined (simulated decline — no money moved)' : c.scenario === 'DEMO-ERROR' ? 'Generic payment processing error (simulated — no money moved)' : '';
+    var B = S.bill, id = 'TXN-CL-' + (B.seq++), ts = new Date().toISOString(), before = billBudgetState();
+    var status = c.scenario === 'PAY-SUCCESS' ? 'Successful' : 'Failed', reason = c.scenario === 'PAY-DECLINED' ? 'Card declined (simulated decline — no money moved)' : c.scenario === 'PAY-ERROR' ? 'Generic payment processing error (simulated — no money moved)' : '';
     var t = { id: id, kind: 'purchase', ts: ts, productId: prod.id, product: prod.name, qty: 1, sub: o.sub, disc: o.disc, tax: o.tax, total: o.total, methodLabel: methodLabel(pm), status: status, reason: reason, promo: c.applied || '', scenario: c.scenario, ref: 'SIMREF-' + hashStr(id + ts).toString(36).toUpperCase(), billing: { name: c.name.trim(), addr: c.addr.trim(), city: c.city.trim(), state: c.state.trim(), pin: c.pin.trim(), country: c.country.trim() }, origin: 'student' };
-    B.transactions.push(t); var inv = null; if (status === 'Successful') { inv = { id: uid('inv'), number: 'INV-DEMO-' + (B.seq++), txnId: id, ts: ts }; B.invoices.push(inv); }
+    B.transactions.push(t); var inv = null; if (status === 'Successful') { inv = { id: uid('inv'), number: 'INV-CL-' + (B.seq++), txnId: id, ts: ts }; B.invoices.push(inv); }
     logAct((status === 'Successful' ? 'Simulated purchase succeeded: ' : 'Simulated purchase failed: ') + prod.name + ' (' + id + ')'); save(); updateChrome();
     var after = billBudgetState();
     if (status === 'Successful') { ui.co = null; } else { c.agree = false; c.step = 4; }
     renderMain();
-    openModal({ title: status === 'Successful' ? 'Simulated payment successful' : 'Simulated payment failed', body: [status === 'Successful' ? callout('ok', h('strong', null, 'DEMO RESULT: '), 'This simulated payment was approved. No real money was transferred and no real payment was made.') : callout('err', h('strong', null, 'DEMO RESULT: '), reason + '. This transaction is recorded as Failed (simulated) and does not count as a purchase.'),
+    openModal({ title: status === 'Successful' ? 'Simulated payment successful' : 'Simulated payment failed', body: [status === 'Successful' ? callout('ok', h('strong', null, 'RESULT: '), 'This simulated payment was approved. No real money was transferred and no real payment was made.') : callout('err', h('strong', null, 'RESULT: '), reason + '. This transaction is recorded as Failed (simulated) and does not count as a purchase.'),
       h('dl', { class: 'dl' }, [['Transaction ID', id], ['Reference (fictional)', t.ref], ['Amount', inr(o.total)], ['Status', status + ' — simulated'], inv ? ['Invoice', inv.number] : null].filter(Boolean).map(function (r) { return [h('dt', null, r[0]), h('dd', { class: 'mono' }, r[1])]; }))],
       actions: [{ label: 'Transaction history', onClick: function () { setBillTab('history'); } }].concat(inv ? [{ label: 'View receipt', cls: 'primary', onClick: function () { openInvoice(t); } }] : [{ label: 'Try again', cls: 'primary' }]) });
     if (status === 'Successful' && after.warn && !before.warn) { addNote('budget', 'Simulated purchase budget ' + (after.over ? 'exceeded' : 'threshold reached'), 'This month: ' + inr(after.spent) + ' of ' + inr(S.bill.budget.limit) + ' (SIMULATED).'); save(); updateChrome(); }
@@ -1491,14 +1610,14 @@ function showTxn(t) {
 function settleTxn(t, ok) {
   if (t.status !== 'Pending') { toast('Only pending transactions can be settled.', 'warn'); return; }
   t.status = ok ? 'Successful' : 'Failed'; if (!ok) t.reason = 'Settlement failed (simulated — no money moved)';
-  if (ok && !invoiceFor(t.id)) S.bill.invoices.push({ id: uid('inv'), number: 'INV-DEMO-' + (S.bill.seq++), txnId: t.id, ts: new Date().toISOString() });
+  if (ok && !invoiceFor(t.id)) S.bill.invoices.push({ id: uid('inv'), number: 'INV-CL-' + (S.bill.seq++), txnId: t.id, ts: new Date().toISOString() });
   logAct('Pending transaction settled (' + t.status + '): ' + t.id); commit(); toast(t.id + ' settled as ' + t.status + ' (simulated).', 'ok');
 }
 function refundTxn(t) {
   if (!eligibleRefund(t)) { toast('This transaction is not eligible for a refund (not successful, or already refunded).', 'warn'); return; }
-  confirmDlg('Simulated refund', 'SIMULATED REFUND — NO MONEY MOVED. Refund ' + inr(t.total) + ' for ' + t.id + '? This only updates demo records in your browser.', 'Refund (simulated)', function () {
+  confirmDlg('Simulated refund', 'SIMULATED REFUND — NO MONEY MOVED. Refund ' + inr(t.total) + ' for ' + t.id + '? This only updates records in your browser.', 'Refund (simulated)', function () {
     if (!eligibleRefund(t)) { toast('A refund was already recorded for this transaction.', 'warn'); return; }
-    var B = S.bill, rid = 'RFD-DEMO-' + (B.seq++), rtid = 'TXN-DEMO-' + (B.seq++), ts = new Date().toISOString();
+    var B = S.bill, rid = 'RFD-CL-' + (B.seq++), rtid = 'TXN-CL-' + (B.seq++), ts = new Date().toISOString();
     B.refunds.push({ id: rid, txnId: t.id, refundTxnId: rtid, amount: t.total, ts: ts, note: 'SIMULATED REFUND — NO MONEY MOVED' });
     t.status = 'Refunded'; t.refundId = rid;
     B.transactions.push({ id: rtid, kind: 'refund', ts: ts, product: 'Refund: ' + t.product, qty: 1, total: -t.total, methodLabel: t.methodLabel, status: 'Refunded', linked: t.id, ref: 'SIMREF-' + hashStr(rtid).toString(36).toUpperCase(), origin: 'student' });
@@ -1526,8 +1645,8 @@ function bHistory() {
 /* ---------- Invoices & Receipts ---------- */
 function bInvoices() {
   var list = allInvoices();
-  return [callout('info', 'Invoices are generated only for successful simulated purchases. They are DEMO documents, not valid for tax or reimbursement.'),
-    h('div', { class: 'row', style: 'margin-bottom:12px' }, btn('Export all invoices (CSV)', 'primary', function () { if (!list.length) { toast('There are no invoices to export yet.', 'warn'); return; } downloadText('cloudlab-demo-invoices.csv', invoiceCsv(list), 'text/csv'); })),
+  return [callout('info', 'Invoices are generated only for successful simulated purchases. '),
+    h('div', { class: 'row', style: 'margin-bottom:12px' }, btn('Export all invoices (CSV)', 'primary', function () { if (!list.length) { toast('There are no invoices to export yet.', 'warn'); return; } downloadText('cloudlab-invoices.csv', invoiceCsv(list), 'text/csv'); })),
     h('div', { class: 'card' }, list.length ? table([
       { label: 'Invoice number', render: function (p) { return h('span', { class: 'mono' }, p.inv.number); } }, { label: 'Date', render: function (p) { return fmtDate(p.inv.ts); } }, { label: 'Transaction', render: function (p) { return h('span', { class: 'mono' }, p.t.id); } },
       { label: 'Billed to', render: function (p) { return p.t.billing ? p.t.billing.name : '—'; } }, { label: 'Total', render: function (p) { return inr(p.t.total); } }, { label: 'Status', render: function (p) { return badge(p.t.status === 'Refunded' ? 'Refunded' : 'Successful', p.t.status === 'Refunded' ? 'Refunded' : 'Paid'); } },
@@ -1542,10 +1661,10 @@ function bBudget() {
   thIn.addEventListener('input', function () { thv.textContent = thIn.value + '%'; });
   var p = pct(bs.spent, B.limit), cls = bs.over ? 'err' : bs.warn ? 'warn' : '';
   var months = lastMonths(6).map(function (m) { return { label: m.label, value: monthSpend(m.key) }; });
-  return [bs.warn ? callout(bs.over ? 'err' : 'warn', h('strong', null, bs.over ? 'Simulated purchase budget exceeded. ' : 'Warning threshold reached. '), 'This month\'s simulated purchases are ' + inr(bs.spent) + ' against a ' + inr(B.limit) + ' demo limit. Nothing real is charged — this is a teaching alert.') : callout('ok', 'This month\'s simulated purchases (' + inr(bs.spent) + ') are below your ' + B.threshold + '% warning threshold (' + inr(bs.thAmt) + ').'),
+  return [bs.warn ? callout(bs.over ? 'err' : 'warn', h('strong', null, bs.over ? 'Simulated purchase budget exceeded. ' : 'Warning threshold reached. '), 'This month\'s simulated purchases are ' + inr(bs.spent) + ' against a ' + inr(B.limit) + ' limit. Nothing real is charged — this is a teaching alert.') : callout('ok', 'This month\'s simulated purchases (' + inr(bs.spent) + ') are below your ' + B.threshold + '% warning threshold (' + inr(bs.thAmt) + ').'),
     h('div', { class: 'grid g2' },
       h('form', { class: 'card', novalidate: 'novalidate', onsubmit: function (e) { e.preventDefault(); var l = parseFloat(limIn.value), t = parseInt(thIn.value, 10); if (!(l >= 1 && l <= 1000000)) { er.textContent = 'Monthly limit must be between ₹1 and ₹10,00,000.'; limIn.focus(); return; } er.textContent = ''; S.bill.budget = { limit: l, threshold: t }; logAct('Purchase budget updated: ' + inr(l) + ' at ' + t + '%'); commit(); toast('Simulated purchase budget saved.', 'ok'); } },
-        h('h2', null, 'Simulated purchase budget'), h('div', { class: 'fg' }, h('label', { for: 'pb-lim' }, 'Monthly demo spending limit (₹, SIMULATED)'), limIn), h('div', { class: 'fg' }, h('label', { for: 'pb-th' }, 'Warning threshold'), h('div', { class: 'row' }, thIn, thv)), er,
+        h('h2', null, 'Simulated purchase budget'), h('div', { class: 'fg' }, h('label', { for: 'pb-lim' }, 'Monthly spending limit (₹, SIMULATED)'), limIn), h('div', { class: 'fg' }, h('label', { for: 'pb-th' }, 'Warning threshold'), h('div', { class: 'row' }, thIn, thv)), er,
         h('div', { class: 'pitem' }, h('div', { class: 'row spread' }, h('span', null, 'This month\'s simulated purchases'), h('span', { class: 'muted' }, inr(bs.spent) + ' / ' + inr(B.limit) + ' (' + p + '%)')), h('div', { class: 'prog ' + cls, role: 'progressbar', 'aria-label': 'Purchase budget usage', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(p) }, h('i', { style: 'width:' + p + '%' }))),
         h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'submit' }, 'Save budget'), btn('Reset budget', '', function () { confirmDlg('Reset purchase budget?', 'Restore the default ₹500 limit and 80% warning threshold?', 'Reset budget', function () { S.bill.budget = { limit: 500, threshold: 80 }; logAct('Purchase budget reset'); commit(); toast('Budget reset to defaults.', 'ok'); }, false); }))),
       h('div', { class: 'card chartbox' }, h('h2', null, 'Simulated spending history'), barChart(months, 'Simulated purchases by month', '#1d5fbf'), h('p', { class: 'muted small' }, 'Net of refunds. Failed and pending transactions are not counted.'))),
@@ -1567,8 +1686,8 @@ function bFree() {
    server: lab validation here is client-side and can be tampered with by
    anyone who edits localStorage. Real enforcement needs a backend.
    ====================================================================== */
-BTABS.push(['verify', '₹1 Verification (Demo)']);
-var ADMIN_USER = 'admin.demo', ADMIN_CODE = 'learn-admin-demo';
+BTABS.push(['verify', '₹1 Verification']);
+var ADMIN_USER = 'admin', ADMIN_CODE = 'learn-admin';
 var NTYPES = { welcome: 'Welcome messages', verify: 'Verification notices', course: 'Course completion', lab: 'Lab achievements', reminder: 'Learning reminders', security: 'Security events', resource: 'Simulated resource events', budget: 'Budget alerts', announcement: 'Platform announcements' };
 var QUIZZES = {
   q1: { title: 'Cloud Foundations quiz', pass: 70, qs: [
@@ -1611,16 +1730,39 @@ var COURSES = [
       { id: 'c4l3', title: 'Health checks and rollbacks', body: 'Health checks confirm the app responds. If a release fails, a rollback returns to the last known good version.' }] }
 ];
 var LABS = {
-  'lab-vm': { title: 'Launch a simulated virtual machine', kind: 'state', steps: ['Open Compute (delete test-vm-demo first if your 2-instance quota is full).', 'Create an instance with any valid name.', 'Wait until it shows Running, then validate.'], hint: 'Quota is 2 instances. Delete or terminate one sample VM, then create yours.', go: 'compute' },
+  'lab-vm': { title: 'Launch a simulated virtual machine', kind: 'state', steps: ['Open Compute (delete test-vm first if your 2-instance quota is full).', 'Create an instance with any valid name.', 'Wait until it shows Running, then validate.'], hint: 'Quota is 2 instances. Delete or terminate one sample VM, then create yours.', go: 'compute' },
   'lab-bucket': { title: 'Create an object-storage bucket', kind: 'state', steps: ['Open Storage and create a bucket of your own.', 'Use Upload to record at least one simulated object in it.', 'Validate.'], hint: 'Only buckets created by you count. Use the Upload button on your bucket card.', go: 'storage' },
   'lab-db': { title: 'Configure a database', kind: 'state', steps: ['Open Databases and create a simulated database.', 'Wait until its status is Available.', 'Validate.'], hint: 'Provisioning takes a couple of seconds. Look for the Available badge.', go: 'databases' },
-  'lab-net': { title: 'Build a virtual network', kind: 'state', steps: ['Open Networking. The quota is 1 VCN, so delete student-vcn-demo first.', 'Create a network with a valid private CIDR from /16 to /24.', 'Validate.'], hint: 'Try 10.1.0.0/16. Only networks created by you count.', go: 'networking' },
+  'lab-net': { title: 'Build a virtual network', kind: 'state', steps: ['Open Networking. The quota is 1 VCN, so delete student-vcn first.', 'Create a network with a valid private CIDR from /16 to /24.', 'Validate.'], hint: 'Try 10.1.0.0/16. Only networks created by you count.', go: 'networking' },
   'lab-iam': { title: 'Apply least-privilege IAM permissions', kind: 'iam', steps: ['Read the scenario.', 'Tick only the permissions that are required.', 'Validate your policy.'], hint: 'The intern only needs to read files. Everything else is extra.' },
   'lab-alert': { title: 'Configure a monitoring alert', kind: 'alert', steps: ['Choose the metric to watch.', 'Set a sensible condition, threshold and duration.', 'Enable notification and validate.'], hint: 'High CPU means above roughly 70–90% for 5–30 minutes, with notification on.' },
   'lab-deploy': { title: 'Deploy a simulated application', kind: 'deploy', steps: ['Read the app facts.', 'Fill in the deployment settings.', 'Run the simulated workflow.'], hint: 'The app listens on port 8080 and exposes /health. Production is the target.' },
   'lab-fix': { title: 'Troubleshoot a failed deployment', kind: 'fix', steps: ['Read the log.', 'Choose the root cause.', 'Choose the right fix and validate.'], hint: 'Compare the port in the app line with the port in the health line.' }
 };
-var ACHS = [['first-lab', 'First lab passed', 'Pass any guided lab.'], ['quiz-ace', 'Quiz ace', 'Score 100% on a quiz.'], ['first-course', 'Course completed', 'Complete a whole course.'], ['lab-master', 'Lab master', 'Pass all 8 labs.']];
+var ACHS = [['first-lab', 'First lab passed', 'Pass any guided lab.'], ['quiz-ace', 'Quiz ace', 'Score 100% on a quiz.'], ['first-course', 'Course completed', 'Complete a whole course.'], ['lab-master', 'Lab master', 'Pass every lab.']];
+
+/* ---- Week 9 course (from the "Week 9 - Cloud Computing" notes) ---- */
+COURSES.push({ id: 'c5', title: 'Week 9: Cloud Computing', level: 'Beginner', mins: 75, cat: 'Fundamentals', prereq: [], quiz: 'q5', labs: ['lab-models', 'lab-signup', 'lab-tour'],
+  desc: 'Cloud basics from the Week 9 IT skills notes: benefits, IaaS/PaaS/SaaS, creating a free cloud account and exploring a cloud console.',
+  obj: ['Define cloud computing and list its benefits and use cases', 'Tell IaaS, PaaS and SaaS apart', 'Put the free-account signup steps in order', 'Recognise the main widgets on a cloud console home page'],
+  lessons: [
+    { id: 'c5l1', title: 'What is cloud computing?', body: 'Cloud computing is the delivery of computing services (servers, storage, databases, networking, software and more) over the internet. You can use resources without owning or maintaining physical hardware.\nInstead of storing data or running programs on a personal computer or server, you do it remotely through providers such as Amazon Web Services (AWS), Microsoft Azure or Google Cloud Platform (GCP).' },
+    { id: 'c5l2', title: 'Benefits and use cases', body: 'Benefits:\n• Cost efficiency: pay as you go, with no hardware to buy.\n• Scalability: scale up or down with demand.\n• Accessibility: reach it from anywhere with internet.\n• Performance: fast infrastructure with global reach.\n• Backup and recovery: automated backups and disaster recovery.\n• Security: encryption, access controls and compliance.\nUse cases: data storage (Google Drive, Dropbox), web hosting, SaaS (Google Docs, Microsoft 365), online education (Coursera, Khan Academy), streaming (Netflix, YouTube), enterprise apps (ERP, CRM), and backup and disaster recovery.' },
+    { id: 'c5l3', title: 'Cloud service models: IaaS, PaaS, SaaS', body: 'IaaS (Infrastructure as a Service): virtualized servers, storage and networking. You manage the OS, applications and data. Examples: Amazon EC2, Azure Virtual Machines.\nPaaS (Platform as a Service): a platform for developers to build, test and deploy apps. You manage applications and data; the provider manages the OS, servers and storage. Examples: Google App Engine, Heroku, Azure App Service.\nSaaS (Software as a Service): ready-to-use software over the internet. You just use it in a browser or app; the provider manages everything. Examples: Gmail, Zoom, Salesforce, Microsoft 365.' },
+    { id: 'c5l4', title: 'Creating a free cloud account', body: 'General steps: 1) choose a cloud provider, 2) sign up or sign in, 3) provide payment information, 4) agree to the terms and conditions.\nTypical free-account steps (the notes use AWS as the example):\n1. Go to the provider\'s free-tier page.\n2. Click "Create a Free Account".\n3. Enter your email and set a root user account.\n4. Provide contact information and choose "Personal" for individuals.\n5. Verify your phone number via SMS.\n6. Enter payment information. A temporary small charge (about $1) is taken to verify the card.\n7. Select a support plan: "Basic" is free.\n8. Log in and start using free-tier services.\nIn this simulator the same flow exists in the signup, using fictional phone and card numbers only.' },
+    { id: 'c5l5', title: 'Exploring the cloud console', body: 'The console home page is a dashboard of widgets:\n• Recently visited: quick links to services you used lately.\n• Security: a security score with failed controls and findings.\n• Welcome: getting-started guides, training and what is new.\n• Cost and usage: current month cost, forecast and savings opportunities.\n• Health: open issues and scheduled changes.\nThe top bar has a search box, the selected region and your account menu. In this simulator, open Dashboard and Cost Management to compare.' }
+  ] });
+QUIZZES.q5 = { title: 'Week 9: Cloud Computing quiz', pass: 70, qs: [
+  { q: 'What does the pay-as-you-go model mean?', o: ['You pay for what you use and need no upfront hardware', 'You buy all servers first', 'Everything is free forever', 'You pay only for software licences'], a: 0, why: 'Cost efficiency comes from paying only for the resources you use.' },
+  { q: 'In which model do you manage the operating system, applications and data?', o: ['SaaS', 'PaaS', 'IaaS', 'None of them'], a: 2, why: 'IaaS gives virtual infrastructure; you manage the OS, apps and data.' },
+  { q: 'Heroku and Google App Engine are examples of:', o: ['IaaS', 'PaaS', 'SaaS', 'On-premises servers'], a: 1, why: 'PaaS gives developers a platform; the provider manages the OS and servers.' },
+  { q: 'Gmail and Zoom are examples of:', o: ['SaaS', 'IaaS', 'PaaS', 'Object storage'], a: 0, why: 'SaaS is ready-to-use software the provider manages for you.' },
+  { q: 'Why is a small temporary charge taken during free-account signup?', o: ['To verify the payment card', 'To buy storage', 'To pay for support', 'To unlock the console'], a: 0, why: 'The temporary charge confirms the card is valid.' },
+  { q: 'Which support plan do the free-account steps select?', o: ['Business', 'Developer', 'Basic (free)', 'Enterprise'], a: 2, why: 'Step 7 selects the free Basic plan.' },
+  { q: 'Which console widget shows the current month cost and forecast?', o: ['Recently visited', 'Cost and usage', 'Security', 'Health'], a: 1, why: 'Cost and usage shows spend, forecast and savings opportunities.' }] };
+LABS['lab-models'] = { title: 'Sort services into IaaS, PaaS and SaaS', kind: 'sort', steps: ['Read each service name.', 'Choose IaaS, PaaS or SaaS for each.', 'Validate your answers.'], hint: 'Ask who manages the operating system. If you do, it is IaaS. If you only upload your app, it is PaaS. If you just use it, it is SaaS.' };
+LABS['lab-signup'] = { title: 'Put the free-account steps in order', kind: 'order', steps: ['Use the arrows to reorder the steps.', 'Validate the order.'], hint: 'Start at the free-tier page, create the account, then verify identity and payment, pick a plan and only then log in.' };
+LABS['lab-tour'] = { title: 'Console tour: match the widgets', kind: 'match', steps: ['Look at the sample console home page.', 'Match each widget to what it shows.', 'Validate.'], hint: 'Cost and usage is about money. Health is about issues and scheduled changes.' };
 
 /* ---------- Theme ---------- */
 function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
@@ -1672,7 +1814,7 @@ function isEnrolled(c) { return !!S.learn.enrolled[c.id]; }
 function isPub(c) { return S.learn.pub[c.id] !== false; }
 function checkAll(c) {
   var l = S.learn;
-  if (c && isEnrolled(c) && cProg(c).complete && !l.certs[c.id]) { l.certs[c.id] = new Date().toISOString(); logAct('Course completed: ' + c.title); addNote('course', 'Course completed: ' + c.title, 'Every lesson, the quiz and all labs are done. Your demo certificate is ready in My Learning.'); toast('Course completed: ' + c.title + '!', 'ok'); }
+  if (c && isEnrolled(c) && cProg(c).complete && !l.certs[c.id]) { l.certs[c.id] = new Date().toISOString(); logAct('Course completed: ' + c.title); addNote('course', 'Course completed: ' + c.title, 'Every lesson, the quiz and all labs are done. Your certificate is ready in My Learning.'); toast('Course completed: ' + c.title + '!', 'ok'); }
   function ach(id, name) { if (!l.ach[id]) { l.ach[id] = new Date().toISOString(); addNote('lab', 'Achievement unlocked: ' + name, 'Nice work.'); toast('Achievement: ' + name, 'ok'); } }
   if (Object.keys(l.labs).some(labPassed)) ach('first-lab', 'First lab passed');
   if (Object.keys(l.quizzes).some(function (k) { return l.quizzes[k].best === 100; })) ach('quiz-ace', 'Quiz ace');
@@ -1699,7 +1841,7 @@ function catalog() {
     host.replaceChildren.apply(host, rows.length ? rows.map(function (c) {
       var p = cProg(c), en = isEnrolled(c), done = !!S.learn.certs[c.id];
       return h('div', { class: 'card' }, h('div', { class: 'row spread' }, h('h3', { style: 'margin:0' }, c.title), h('span', { class: 'chip' }, c.level)), h('p', { class: 'muted' }, c.desc),
-        h('div', { class: 'small muted' }, c.cat + ' · ' + c.mins + ' min · ' + c.lessons.length + ' lessons · 1 quiz · ' + c.labs.length + ' labs' + (c.prereq.length ? ' · Prerequisite: ' + c.prereq.map(function (x) { return cById(x).title; }).join(', ') : '')),
+        h('div', { class: 'small muted' }, c.cat + ' · ' + c.mins + ' min · ' + c.lessons.length + ' lessons · 1 quiz · ' + c.labs.length + ' labs'),
         en ? h('div', { style: 'margin:10px 0' }, h('div', { class: 'prog', role: 'progressbar', 'aria-label': c.title + ' progress', 'aria-valuenow': String(p.pct), 'aria-valuemin': '0', 'aria-valuemax': '100' }, h('i', { style: 'width:' + p.pct + '%' })), h('div', { class: 'small muted' }, p.pct + '%' + (done ? ' · Completed' : ''))) : null,
         h('div', { class: 'acts', style: 'margin-top:10px' }, btn(en ? (done ? 'Review' : 'Continue') : 'View course', 'sm primary', function () { ui.courseId = c.id; renderMain(); window.scrollTo(0, 0); }), en ? null : btn('Enroll', 'sm', function () { enroll(c); })));
     }) : [h('div', { style: 'grid-column:1/-1' }, emptyState('No matching courses', 'Try clearing the filters.'))]);
@@ -1710,8 +1852,6 @@ function catalog() {
   list(); return [bar2, host];
 }
 function enroll(c) {
-  var miss = c.prereq.filter(function (p) { return !S.learn.certs[p]; });
-  if (miss.length) { toast('Complete the prerequisite first: ' + miss.map(function (p) { return cById(p).title; }).join(', '), 'warn'); return false; }
   if (!isPub(c)) { toast('This course is unpublished.', 'warn'); return false; }
   S.learn.enrolled[c.id] = new Date().toISOString(); logAct('Enrolled in course: ' + c.title); commit(); toast('Enrolled in ' + c.title + '.', 'ok'); return true;
 }
@@ -1720,12 +1860,12 @@ function courseDetail(c) {
   var req = [['All ' + c.lessons.length + ' lessons marked complete (' + p.ls + '/' + c.lessons.length + ')', p.ls === c.lessons.length], ['Quiz passed with at least ' + qz.pass + '%' + (qr ? ' (best ' + qr.best + '%)' : ''), !!p.q], ['All ' + c.labs.length + ' labs passed (' + p.lb + '/' + c.labs.length + ')', p.lb === c.labs.length]];
   return [h('div', { class: 'row', style: 'margin-bottom:10px' }, btn('← All courses', 'sm', function () { ui.courseId = null; renderMain(); })),
     pageHead(c.title, c.level + ' · ' + c.cat + ' · about ' + c.mins + ' minutes', [en ? null : btn('Enroll', 'primary', function () { enroll(c); }), L.certs[c.id] ? btn('View certificate', '', function () { openCert(c); }) : null]),
-    h('div', { class: 'grid g2', style: 'margin-bottom:16px' }, h('div', { class: 'card' }, h('h2', null, 'Learning objectives'), h('ul', null, c.obj.map(function (o) { return h('li', null, o); })), h('p', { class: 'muted small' }, 'Prerequisites: ' + (c.prereq.length ? c.prereq.map(function (x) { return cById(x).title; }).join(', ') : 'none'))),
+    h('div', { class: 'grid g2', style: 'margin-bottom:16px' }, h('div', { class: 'card' }, h('h2', null, 'Learning objectives'), h('ul', null, c.obj.map(function (o) { return h('li', null, o); })), h('p', { class: 'muted small' }, 'Take courses, lessons, the quiz and labs in any order you like.')),
       h('div', { class: 'card' }, h('h2', null, 'Completion requirements'), h('ul', { class: 'check' }, req.map(function (r) { return h('li', { class: r[1] ? 'done' : '' }, h('span', { class: 'box' }, r[1] ? icon('check') : null), h('span', null, r[0])); })), h('div', { class: 'prog', role: 'progressbar', 'aria-label': 'Course progress', 'aria-valuenow': String(p.pct), 'aria-valuemin': '0', 'aria-valuemax': '100' }, h('i', { style: 'width:' + p.pct + '%' })), h('div', { class: 'small muted' }, p.pct + '% complete' + (L.certs[c.id] ? ' · completed ' + fmtDate(L.certs[c.id]) : '')))),
     !en ? callout('warn', 'Enroll to track lessons, take the quiz and start labs.') : null,
-    h('h2', null, 'Lessons'), c.lessons.map(function (ls) { var d = !!L.lessons[ls.id]; return h('div', { class: 'lesson' + (d ? ' done' : '') }, h('div', { class: 'row spread' }, h('h3', { style: 'margin:0' }, ls.title), d ? h('span', { class: 'badge ok' }, 'Completed') : null), h('p', { style: 'margin-top:8px' }, ls.body), d ? null : btn('Mark lesson complete', 'sm', function () { if (!en) { toast('Enroll first to track lessons.', 'warn'); return; } L.lessons[ls.id] = new Date().toISOString(); logAct('Lesson completed: ' + ls.title); checkAll(c); commit(); })); }),
-    h('h2', { style: 'margin-top:20px' }, 'Quiz'), h('div', { class: 'card' }, h('div', { class: 'row spread' }, h('div', null, h('strong', null, qz.title), h('div', { class: 'muted small' }, qz.qs.length + ' questions · pass mark ' + qz.pass + '%' + (qr ? ' · ' + qr.attempts + ' attempt(s), best ' + qr.best + '%' : ''))), btn(qr ? 'Retake quiz' : 'Take quiz', 'primary', function () { if (!en) { toast('Enroll first to take the quiz.', 'warn'); return; } openQuiz(c); }))),
-    h('h2', { style: 'margin-top:20px' }, 'Guided labs'), c.labs.map(function (id) { var lb = LABS[id], r = L.labs[id]; return h('div', { class: 'lesson' + (r && r.passed ? ' done' : '') }, h('div', { class: 'row spread' }, h('h3', { style: 'margin:0' }, lb.title), r && r.passed ? h('span', { class: 'badge ok' }, 'Passed') : r ? h('span', { class: 'badge warn' }, r.attempts + ' attempt(s)') : h('span', { class: 'badge gray' }, 'Not started')), h('ol', { class: 'small' }, lb.steps.map(function (s) { return h('li', null, s); })), btn(r && r.passed ? 'Review lab' : 'Start lab', 'sm primary', function () { if (!en) { toast('Enroll first to start labs.', 'warn'); return; } openLab(id, c); })); })];
+    h('h2', null, 'Lessons'), c.lessons.map(function (ls) { var d = !!L.lessons[ls.id]; return h('div', { class: 'lesson' + (d ? ' done' : '') }, h('div', { class: 'row spread' }, h('h3', { style: 'margin:0' }, ls.title), d ? h('span', { class: 'badge ok' }, 'Completed') : null), h('p', { style: 'margin-top:8px;white-space:pre-line' }, ls.body), d ? null : btn('Mark lesson complete', 'sm', function () { if (!en && !enroll(c)) return; L.lessons[ls.id] = new Date().toISOString(); logAct('Lesson completed: ' + ls.title); checkAll(c); commit(); })); }),
+    h('h2', { style: 'margin-top:20px' }, 'Quiz'), h('div', { class: 'card' }, h('div', { class: 'row spread' }, h('div', null, h('strong', null, qz.title), h('div', { class: 'muted small' }, qz.qs.length + ' questions · pass mark ' + qz.pass + '%' + (qr ? ' · ' + qr.attempts + ' attempt(s), best ' + qr.best + '%' : ''))), btn(qr ? 'Retake quiz' : 'Take quiz', 'primary', function () { if (!en && !enroll(c)) return; openQuiz(c); }))),
+    h('h2', { style: 'margin-top:20px' }, 'Guided labs'), c.labs.map(function (id) { var lb = LABS[id], r = L.labs[id]; return h('div', { class: 'lesson' + (r && r.passed ? ' done' : '') }, h('div', { class: 'row spread' }, h('h3', { style: 'margin:0' }, lb.title), r && r.passed ? h('span', { class: 'badge ok' }, 'Passed') : r ? h('span', { class: 'badge warn' }, r.attempts + ' attempt(s)') : h('span', { class: 'badge gray' }, 'Not started')), h('ol', { class: 'small' }, lb.steps.map(function (s) { return h('li', null, s); })), btn(r && r.passed ? 'Review lab' : 'Start lab', 'sm primary', function () { if (!en && !enroll(c)) return; openLab(id, c); })); })];
 }
 function openQuiz(c) {
   var qz = QUIZZES[c.quiz], form = h('form', { novalidate: 'novalidate' }), res = h('div', { role: 'status' });
@@ -1752,7 +1892,7 @@ function myLearning() {
 }
 function openCert(c) {
   var d = S.learn.certs[c.id]; if (!d) { toast('Complete every requirement first.', 'warn'); return; }
-  var doc = h('div', { class: 'invoice', style: 'text-align:center;padding:36px' }, h('div', { class: 'small' }, 'CloudLab Free · simulator'), h('h2', { style: 'font-size:1.8rem' }, 'Certificate of Completion'), h('p', null, 'awarded to'), h('h2', null, who().name), h('p', null, 'for completing the course'), h('h3', null, c.title), h('p', null, fmtDate(d)), h('div', { class: 'mono small' }, 'CERT-DEMO-' + hashStr(c.id + d).toString(36).toUpperCase()), h('div', { class: 'invwm' }, 'DEMO CERTIFICATE — educational record from a simulator, not an accredited credential'));
+  var doc = h('div', { class: 'invoice', style: 'text-align:center;padding:36px' }, h('div', { class: 'small' }, 'CloudLab Free · simulator'), h('h2', { style: 'font-size:1.8rem' }, 'Certificate of Completion'), h('p', null, 'awarded to'), h('h2', null, who().name), h('p', null, 'for completing the course'), h('h3', null, c.title), h('p', null, fmtDate(d)), h('div', { class: 'mono small' }, 'CERT-CL-' + hashStr(c.id + d).toString(36).toUpperCase()), h('div', { class: 'invwm' }, 'CERTIFICATE — educational record from a simulator, not an accredited credential'));
   openModal({ title: 'Certificate: ' + c.title, wide: true, body: doc, actions: [{ label: 'Print / Save as PDF', cls: 'primary', close: false, onClick: function () { printNode(doc); return false; } }, { label: 'Close' }] });
 }
 
@@ -1775,21 +1915,36 @@ function openLab(id, course) {
   if (lb.kind === 'state') comp.appendChild(h('div', { class: 'row' }, btn('Go to ' + lb.go, '', function () { var m = modalStack[modalStack.length - 1]; if (m) m.close(); nav(lb.go); })));
   else if (lb.kind === 'iam') {
     var perms = [['bucket-read', 'Bucket: read objects'], ['bucket-write', 'Bucket: write objects'], ['bucket-delete', 'Bucket: delete objects'], ['vm-ctl', 'VM: start and stop'], ['vm-delete', 'VM: delete'], ['db-admin', 'Database: administer'], ['iam-admin', 'IAM: manage users and roles'], ['billing', 'Billing: view']];
-    comp.appendChild(h('div', null, callout('info', 'Scenario: the user intern-demo must only read files in the bucket student-assets-demo. Select the permissions to grant.'), perms.map(function (p) { return h('label', { class: 'checkrow', style: 'font-weight:500;margin-bottom:6px' }, h('input', { type: 'checkbox', value: p[0], 'data-p': p[0] }), p[1]); })));
+    comp.appendChild(h('div', null, callout('info', 'Scenario: the user intern must only read files in the bucket student-assets. Select the permissions to grant.'), perms.map(function (p) { return h('label', { class: 'checkrow', style: 'font-weight:500;margin-bottom:6px' }, h('input', { type: 'checkbox', value: p[0], 'data-p': p[0] }), p[1]); })));
     getter = function () { var g = [].map.call(comp.querySelectorAll('input[data-p]:checked'), function (x) { return x.value; }); var need = g.indexOf('bucket-read') >= 0; var extra = g.filter(function (x) { return x !== 'bucket-read'; }); if (!need) return { ok: false, msg: 'The intern cannot read files yet. Grant bucket read access.' }; if (extra.length) return { ok: false, msg: 'Too broad. Remove: ' + extra.join(', ') + (extra.indexOf('iam-admin') >= 0 ? '. IAM manage is an unsafe permission: it lets the user grant themselves anything.' : '.') }; return { ok: true, msg: 'Exactly one permission, bucket read. That is least privilege.' }; };
   } else if (lb.kind === 'alert') {
     var m = select(['CPU utilization', 'Memory utilization', 'Disk usage', 'Network throughput'], 'Memory utilization', { id: 'al-m' }), o = select(['above', 'below'], 'below', { id: 'al-o' }), t = h('input', { id: 'al-t', type: 'number', value: '10' }), dmin = h('input', { id: 'al-d', type: 'number', value: '1' }), nt = h('input', { type: 'checkbox', id: 'al-n' });
-    comp.appendChild(h('div', null, callout('info', 'Scenario: get notified when CPU on web-server-demo stays high.'), h('div', { class: 'fg' }, h('label', { for: 'al-m' }, 'Metric'), m), h('div', { class: 'fg' }, h('label', { for: 'al-o' }, 'Condition'), o), h('div', { class: 'fg' }, h('label', { for: 'al-t' }, 'Threshold (%)'), t), h('div', { class: 'fg' }, h('label', { for: 'al-d' }, 'Duration (minutes)'), dmin), h('label', { class: 'checkrow', for: 'al-n' }, nt, 'Send me a notification')));
+    comp.appendChild(h('div', null, callout('info', 'Scenario: get notified when CPU on web-server stays high.'), h('div', { class: 'fg' }, h('label', { for: 'al-m' }, 'Metric'), m), h('div', { class: 'fg' }, h('label', { for: 'al-o' }, 'Condition'), o), h('div', { class: 'fg' }, h('label', { for: 'al-t' }, 'Threshold (%)'), t), h('div', { class: 'fg' }, h('label', { for: 'al-d' }, 'Duration (minutes)'), dmin), h('label', { class: 'checkrow', for: 'al-n' }, nt, 'Send me a notification')));
     getter = function () { var th = parseFloat(t.value), du = parseFloat(dmin.value); if (m.value !== 'CPU utilization') return { ok: false, msg: 'The scenario is about CPU. Choose CPU utilization.' }; if (o.value !== 'above') return { ok: false, msg: 'High CPU means the value goes above the threshold.' }; if (!(th >= 70 && th <= 90)) return { ok: false, msg: 'Threshold should be between 70% and 90%. Lower is noisy, higher is too late.' }; if (!(du >= 5 && du <= 30)) return { ok: false, msg: 'Use a duration of 5–30 minutes so short spikes do not trigger alerts.' }; if (!nt.checked) return { ok: false, msg: 'Enable the notification, otherwise nobody hears the alert.' }; L.alerts = L.alerts || []; L.alerts.push({ metric: m.value, op: o.value, th: th, du: du, ts: new Date().toISOString() }); return { ok: true, msg: 'Alert saved: CPU above ' + th + '% for ' + du + ' minutes with notification.' }; };
   } else if (lb.kind === 'deploy') {
-    var nm = h('input', { id: 'dp-n', type: 'text', value: 'notes-api-demo' }), pt = h('input', { id: 'dp-p', type: 'number', value: '3000' }), ev = select(['development', 'staging', 'production'], 'development', { id: 'dp-e' }), hp = h('input', { id: 'dp-h', type: 'text', value: '/' }), logs = h('div', { class: 'logs', role: 'log', 'aria-label': 'Deployment log', style: 'margin-top:10px;max-height:200px' });
-    comp.appendChild(h('div', null, callout('info', 'App facts: notes-api-demo listens on port 8080 and exposes the health endpoint /health. Deploy it to production.'), h('div', { class: 'fg' }, h('label', { for: 'dp-n' }, 'App name'), nm), h('div', { class: 'fg' }, h('label', { for: 'dp-p' }, 'Port'), pt), h('div', { class: 'fg' }, h('label', { for: 'dp-e' }, 'Environment'), ev), h('div', { class: 'fg' }, h('label', { for: 'dp-h' }, 'Health check path'), hp), logs));
+    var nm = h('input', { id: 'dp-n', type: 'text', value: 'notes-api' }), pt = h('input', { id: 'dp-p', type: 'number', value: '3000' }), ev = select(['development', 'staging', 'production'], 'development', { id: 'dp-e' }), hp = h('input', { id: 'dp-h', type: 'text', value: '/' }), logs = h('div', { class: 'logs', role: 'log', 'aria-label': 'Deployment log', style: 'margin-top:10px;max-height:200px' });
+    comp.appendChild(h('div', null, callout('info', 'App facts: notes-api listens on port 8080 and exposes the health endpoint /health. Deploy it to production.'), h('div', { class: 'fg' }, h('label', { for: 'dp-n' }, 'App name'), nm), h('div', { class: 'fg' }, h('label', { for: 'dp-p' }, 'Port'), pt), h('div', { class: 'fg' }, h('label', { for: 'dp-e' }, 'Environment'), ev), h('div', { class: 'fg' }, h('label', { for: 'dp-h' }, 'Health check path'), hp), logs));
     getter = function () { var e = []; if (!validName(nm.value, 3, 32)) e.push('app name must be 3–32 lowercase letters, numbers or hyphens'); if (+pt.value !== 8080) e.push('port ' + pt.value + ' does not match the app (8080)'); if (ev.value !== 'production') e.push('environment must be production'); if (hp.value !== '/health') e.push('health check path must be /health'); var lines = ['[build] compiling ' + nm.value + ' ... ok', '[test] 14 passed']; if (e.length) { lines.push('[deploy] starting container', '[health] GET :' + pt.value + hp.value + ' -> failed', '[deploy] FAILED'); logs.replaceChildren.apply(logs, lines.map(function (x) { return h('div', null, x); })); return { ok: false, msg: 'Deployment failed: ' + e.join('; ') + '.' }; } lines.push('[deploy] starting container', '[health] GET :8080/health -> 200', '[deploy] SUCCESS (simulated)'); logs.replaceChildren.apply(logs, lines.map(function (x) { return h('div', null, x); })); return { ok: true, msg: 'Simulated deployment succeeded and the health check passed.' }; };
   } else if (lb.kind === 'fix') {
-    comp.appendChild(h('div', null, h('div', { class: 'logs', role: 'log', 'aria-label': 'Failed deployment log' }, ['[build] ok', '[test] ok (14 passed)', '[deploy] starting container notes-api-demo', '[deploy] app listening on :8080', '[health] GET :3000/health -> connection refused (3 attempts)', '[deploy] FAILED: health check did not pass'].map(function (x) { return h('div', null, x); })),
+    comp.appendChild(h('div', null, h('div', { class: 'logs', role: 'log', 'aria-label': 'Failed deployment log' }, ['[build] ok', '[test] ok (14 passed)', '[deploy] starting container notes-api', '[deploy] app listening on :8080', '[health] GET :3000/health -> connection refused (3 attempts)', '[deploy] FAILED: health check did not pass'].map(function (x) { return h('div', null, x); })),
       h('fieldset', { style: 'border:0;padding:0;margin:12px 0' }, h('legend', { style: 'font-weight:700' }, 'Root cause'), ['The build crashed', 'The health check targets port 3000 but the app listens on 8080', 'The database quota was exceeded', 'The region is unavailable'].map(function (x, i) { return h('label', { class: 'mrow', style: 'font-weight:500' }, h('input', { type: 'radio', name: 'rc', value: String(i) }), x); })),
       h('fieldset', { style: 'border:0;padding:0;margin:12px 0' }, h('legend', { style: 'font-weight:700' }, 'Fix'), ['Change the health check port to 8080', 'Add more CPU', 'Disable health checks', 'Delete the deployment'].map(function (x, i) { return h('label', { class: 'mrow', style: 'font-weight:500' }, h('input', { type: 'radio', name: 'fx', value: String(i) }), x); }))));
     getter = function () { var a = comp.querySelector('input[name=rc]:checked'), b = comp.querySelector('input[name=fx]:checked'); if (!a || !b) return { ok: false, msg: 'Choose both a root cause and a fix.' }; if (a.value !== '1') return { ok: false, msg: 'That is not what the log shows. Compare the port on the app line with the port on the health line.' }; if (b.value === '2') return { ok: false, msg: 'Disabling health checks hides the problem and is unsafe. Fix the port instead.' }; if (b.value !== '0') return { ok: false, msg: 'That fix does not address the port mismatch.' }; return { ok: true, msg: 'Correct. The health check was probing the wrong port, so pointing it at 8080 fixes the deployment.' }; };
+
+  } else if (lb.kind === 'sort') {
+    var sitems = [['Amazon EC2', 'IaaS'], ['Google App Engine', 'PaaS'], ['Gmail', 'SaaS'], ['Microsoft Azure Virtual Machines', 'IaaS'], ['Heroku', 'PaaS'], ['Zoom', 'SaaS'], ['Microsoft Azure App Service', 'PaaS'], ['Salesforce', 'SaaS'], ['Microsoft 365', 'SaaS']];
+    comp.appendChild(h('div', null, callout('info', 'Match each service to its model. IaaS: you manage the OS, apps and data. PaaS: you manage apps and data. SaaS: you just use the software.'), sitems.map(function (it, i) { return h('div', { class: 'fg' }, h('label', { for: 'sm' + i }, it[0]), select(['— choose —', 'IaaS', 'PaaS', 'SaaS'], '— choose —', { id: 'sm' + i })); })));
+    getter = function () { var wrong = [], blank = 0; sitems.forEach(function (it, i) { var v = $('#sm' + i, comp).value; if (v === '— choose —') blank++; else if (v !== it[1]) wrong.push(it[0]); }); if (blank) return { ok: false, msg: 'Choose a model for every service (' + blank + ' left).' }; if (wrong.length) return { ok: false, msg: 'Not quite: ' + wrong.join(', ') + '. Think about who manages the operating system.' }; return { ok: true, msg: 'All 9 services matched to the right model.' }; };
+  } else if (lb.kind === 'order') {
+    var ST = ['Go to the provider\'s free-tier page', 'Click "Create a Free Account"', 'Enter your email and set a root user account', 'Provide contact information and choose "Personal"', 'Verify your phone number via SMS', 'Enter payment information (temporary verification charge)', 'Select a support plan ("Basic", free)', 'Log in and start using free-tier services'], ord = [3, 6, 1, 7, 0, 5, 2, 4], olist = h('ol', { style: 'padding-left:22px' });
+    var draw = function () { olist.replaceChildren.apply(olist, ord.map(function (si, pos) { return h('li', { style: 'margin-bottom:6px' }, h('div', { class: 'row' }, h('span', { class: 'grow' }, ST[si]), btn('↑', 'sm', function () { if (pos > 0) { var t = ord[pos - 1]; ord[pos - 1] = ord[pos]; ord[pos] = t; draw(); } }, { 'aria-label': 'Move step up', disabled: pos === 0 }), btn('↓', 'sm', function () { if (pos < ord.length - 1) { var t = ord[pos + 1]; ord[pos + 1] = ord[pos]; ord[pos] = t; draw(); } }, { 'aria-label': 'Move step down', disabled: pos === ord.length - 1 }))); })); };
+    draw(); comp.appendChild(h('div', null, callout('info', 'Put the steps for creating a free cloud account in the correct order.'), olist));
+    getter = function () { var n = 0; ord.forEach(function (si, pos) { if (si === pos) n++; }); return n === 8 ? { ok: true, msg: 'All 8 steps are in the right order.' } : { ok: false, msg: n + ' of 8 steps are in the right place.' }; };
+  } else if (lb.kind === 'match') {
+    var W = [['Recently visited', 'Quick links to services you used lately'], ['Security', 'A security score with failed controls and findings'], ['Welcome', 'Getting-started guides, training and what is new'], ['Cost and usage', 'Current month cost, forecast and savings tips'], ['Health', 'Open issues and scheduled changes']], pool = W.map(function (x) { return x[1]; }).sort();
+    comp.appendChild(h('div', null, callout('info', 'This is a sample cloud console home page. Match each widget to what it shows.'), h('div', { class: 'mockcon', 'aria-hidden': 'true' }, W.map(function (x) { return h('div', { class: 'mocktile' }, x[0]); })),
+      W.map(function (x, i) { return h('div', { class: 'fg' }, h('label', { for: 'wt' + i }, x[0] + ' widget'), select(['— choose —'].concat(pool), '— choose —', { id: 'wt' + i })); })));
+    getter = function () { var wrong = [], blank = 0; W.forEach(function (x, i) { var v = $('#wt' + i, comp).value; if (v === '— choose —') blank++; else if (v !== x[1]) wrong.push(x[0]); }); if (blank) return { ok: false, msg: 'Match every widget (' + blank + ' left).' }; if (wrong.length) return { ok: false, msg: 'Check these widgets again: ' + wrong.join(', ') + '.' }; return { ok: true, msg: 'All 5 widgets matched correctly.' }; };
   }
   var done = L.labs[id] && L.labs[id].passed;
   openModal({ title: lb.title, wide: true, body: [callout('info', 'SIMULATED lab. Nothing real is created or deployed.'), h('ol', null, lb.steps.map(function (s) { return h('li', null, s); })), comp, hint, fb, done ? callout('ok', 'You have already passed this lab. You can run it again to practise.') : null],
@@ -1799,25 +1954,25 @@ function openLab(id, course) {
 
 /* ---------- ₹1 verification demo ---------- */
 function bVerify() {
-  var V = S.verify, ev = V.events, dm = S.bill.methods.filter(function (m) { return m.isDefault; })[0] || { brand: 'Demo Visa', last4: '0001', holder: 'Demo Student', exp: '12/30', isDefault: false };
+  var V = S.verify, ev = V.events, dm = S.bill.methods.filter(function (m) { return m.isDefault; })[0] || { brand: 'Visa', last4: '0001', holder: 'Student', exp: '12/30', isDefault: false };
   var sc = select([{ v: 'success', l: 'Success' }, { v: 'decline', l: 'Declined' }, { v: 'cancel', l: 'Cancelled by user' }, { v: 'fail', l: 'Processing failure' }], ui.vsc, { id: 'v-sc', onchange: function (e) { ui.vsc = e.target.value; } });
   var st = V.status, cls = st === 'Verified' ? 'ok' : st === 'Not started' ? 'gray' : 'err';
-  return [h('div', { class: 'paynotice' }, 'DEMO — NO REAL PAYMENT'),
-    callout('warn', 'This is a demo of a ₹1.00 verification step. No card is requested, no money is charged and no bank is contacted. Live payments need a server and a payment provider, which this single-file build does not have.'),
-    h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h2', null, 'Verification'), h('dl', { class: 'dl' }, h('dt', null, 'Amount'), h('dd', null, '₹1.00 INR (simulated)'), h('dt', null, 'Type'), h('dd', null, 'Demo charge-and-refund, simulated'), h('dt', null, 'Status'), h('dd', null, h('span', { class: 'badge ' + cls }, st + (st === 'Verified' ? ' (demo)' : '')))),
-      h('div', { class: 'fg', style: 'margin-top:14px' }, h('label', { for: 'v-sc' }, 'Scenario to simulate'), sc), h('div', { class: 'row' }, btn('Simulate Verification', 'primary', simulateVerify), btn('Clear demo events', 'sm', function () { V.events = []; V.status = 'Not started'; commit(); toast('Demo verification history cleared.', 'ok'); }))),
+  return [null,
+    callout('warn', 'This is an of a ₹1.00 verification step. No card is requested, no money is charged and no bank is contacted. Live payments need a server and a payment provider, which this single-file build does not have.'),
+    h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h2', null, 'Verification'), h('dl', { class: 'dl' }, h('dt', null, 'Amount'), h('dd', null, '₹1.00 INR (simulated)'), h('dt', null, 'Type'), h('dd', null, 'Charge-and-refund, simulated'), h('dt', null, 'Status'), h('dd', null, h('span', { class: 'badge ' + cls }, st + (st === 'Verified' ? '' : '')))),
+      h('div', { class: 'fg', style: 'margin-top:14px' }, h('label', { for: 'v-sc' }, 'Scenario to simulate'), sc), h('div', { class: 'row' }, btn('Simulate Verification', 'primary', simulateVerify), btn('Clear events', 'sm', function () { V.events = []; V.status = 'Not started'; commit(); toast('Verification history cleared.', 'ok'); }))),
       h('div', { class: 'card' }, h('h2', null, 'Payment-method preview'), payCard(dm), h('p', { class: 'muted small', style: 'margin-top:8px' }, 'A fictional preview. Not a real card and not a card issued by anyone.'))),
-    h('div', { class: 'card', style: 'margin-top:16px' }, h('h2', null, 'Demo event history'), ev.length ? table([{ label: 'Event', render: function (e) { return h('span', { class: 'mono' }, e.id); } }, { label: 'Date', render: function (e) { return fmtDate(e.ts); } }, { label: 'Amount', render: function (e) { return inr(e.amount); } }, { label: 'Outcome', render: function (e) { return badge(e.result === 'Verified' ? 'Successful' : 'Failed', e.result); } }, { label: 'Detail', render: function (e) { return e.note; } }], ev.slice().reverse(), 'Verification events') : emptyState('No demo events', 'Run a simulation to see events here.'))];
+    h('div', { class: 'card', style: 'margin-top:16px' }, h('h2', null, 'Event history'), ev.length ? table([{ label: 'Event', render: function (e) { return h('span', { class: 'mono' }, e.id); } }, { label: 'Date', render: function (e) { return fmtDate(e.ts); } }, { label: 'Amount', render: function (e) { return inr(e.amount); } }, { label: 'Outcome', render: function (e) { return badge(e.result === 'Verified' ? 'Successful' : 'Failed', e.result); } }, { label: 'Detail', render: function (e) { return e.note; } }], ev.slice().reverse(), 'Verification events') : emptyState('No events', 'Run a simulation to see events here.'))];
 }
 function simulateVerify() {
   if (ui.paying) return; ui.paying = true; var bar2 = h('i', { style: 'width:0' }), i = 0;
-  openModal({ title: 'Simulating ₹1 verification', dismissible: false, body: h('div', null, h('p', null, 'DEMO — no real payment. Running a local simulation…'), h('div', { class: 'prog', role: 'progressbar', 'aria-label': 'Simulation progress' }, bar2)) });
+  openModal({ title: 'Simulating ₹1 verification', dismissible: false, body: h('div', null, h('p', null, 'Running a local simulation…'), h('div', { class: 'prog', role: 'progressbar', 'aria-label': 'Simulation progress' }, bar2)) });
   var iv = setInterval(function () { i++; bar2.style.width = Math.min(100, i * 50) + '%'; }, 600);
   setTimeout(function () {
     clearInterval(iv); ui.paying = false; var top = modalStack[modalStack.length - 1]; if (top) top.close();
     var map = { success: ['Verified', 'Simulated ₹1 verification succeeded.'], decline: ['Declined', 'Simulated decline. No money moved.'], cancel: ['Cancelled', 'You cancelled the simulated verification.'], fail: ['Failed', 'Simulated processing failure.'] }, r = map[ui.vsc] || map.success;
-    S.verify.seq = (S.verify.seq || 0) + 1; S.verify.events.push({ id: 'VER-DEMO-' + (1000 + S.verify.seq), ts: new Date().toISOString(), amount: 1, result: r[0], note: r[1] }); S.verify.status = r[0];
-    logAct('Demo ₹1 verification: ' + r[0]); addNote('verify', 'Demo verification: ' + r[0], r[1] + ' This is not a real payment or bank verification.'); commit(); toast(r[1], r[0] === 'Verified' ? 'ok' : 'warn');
+    S.verify.seq = (S.verify.seq || 0) + 1; S.verify.events.push({ id: 'VER-CL-' + (1000 + S.verify.seq), ts: new Date().toISOString(), amount: 1, result: r[0], note: r[1] }); S.verify.status = r[0];
+    logAct('Demo ₹1 verification: ' + r[0]); addNote('verify', 'Verification: ' + r[0], r[1] + ' This is not a real payment or bank verification.'); commit(); toast(r[1], r[0] === 'Verified' ? 'ok' : 'warn');
   }, 1300);
 }
 
@@ -1843,21 +1998,21 @@ function aLog(action, detail) { S.admin.audit.unshift({ ts: new Date().toISOStri
 function canWrite() { return S.session && S.session.role === 'Administrator'; }
 function renderAdminLogin() {
   var err = h('div', { class: 'err', role: 'alert' }), u = h('input', { id: 'ad-u', type: 'text', autocomplete: 'username' }), p = h('input', { id: 'ad-p', type: 'password', autocomplete: 'current-password' }), role = select(['Administrator', 'Read-only analyst'], 'Administrator', { id: 'ad-r' });
-  return [pubHeader(), h('main', { id: 'main', class: 'wizard', style: 'max-width:480px' }, h('form', { class: 'card', novalidate: 'novalidate', onsubmit: function (e) { e.preventDefault(); err.textContent = ''; if (u.value.trim() !== ADMIN_USER || p.value !== ADMIN_CODE) { err.textContent = 'Those details do not match the demo admin account.'; p.value = ''; p.focus(); return; } S.session = { type: 'admin', role: role.value, at: new Date().toISOString() }; aLog('Admin sign-in', 'Demo role: ' + role.value); save(); ui.adminTab = 'dash'; render(); toast('Signed in to the demo admin portal.', 'ok'); } },
-    h('div', { class: 'row spread' }, h('h1', { style: 'margin:0' }, 'Admin sign-in'), h('span', { class: 'chip' }, 'Demo')), callout('warn', 'Front-end demo only. The passcode is visible in the page source, so this is NOT real access control. A real admin portal needs server-side authentication and role checks.'),
-    h('div', { class: 'fg' }, h('label', { for: 'ad-u' }, 'Admin username'), u), h('div', { class: 'fg' }, h('label', { for: 'ad-p' }, 'Passcode'), p), h('div', { class: 'fg' }, h('label', { for: 'ad-r' }, 'Demo role'), role, h('div', { class: 'hint' }, 'The read-only analyst can view and export but cannot publish courses or override completion.')), err,
-    h('p', { class: 'hint' }, 'Demo credentials: ', h('b', { class: 'mono' }, ADMIN_USER), ' / ', h('b', { class: 'mono' }, ADMIN_CODE)), h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'submit' }, 'Sign in'), btn('Back to home', '', function () { go('landing'); })))), footer()];
+  return [pubHeader(), h('main', { id: 'main', class: 'wizard', style: 'max-width:480px' }, h('form', { class: 'card', novalidate: 'novalidate', onsubmit: function (e) { e.preventDefault(); err.textContent = ''; if (u.value.trim() !== ADMIN_USER || p.value !== ADMIN_CODE) { err.textContent = 'Those details do not match the admin account.'; p.value = ''; p.focus(); return; } S.session = { type: 'admin', role: role.value, at: new Date().toISOString() }; aLog('Admin sign-in', '' + role.value); save(); ui.adminTab = 'dash'; render(); toast('Signed in to the admin portal.', 'ok'); } },
+    h('div', { class: 'row spread' }, h('h1', { style: 'margin:0' }, 'Admin sign-in'), ), callout('warn', 'Front-end only. The passcode is visible in the page source, so this is NOT real access control. A real admin portal needs server-side authentication and role checks.'),
+    h('div', { class: 'fg' }, h('label', { for: 'ad-u' }, 'Admin username'), u), h('div', { class: 'fg' }, h('label', { for: 'ad-p' }, 'Passcode'), p), h('div', { class: 'fg' }, h('label', { for: 'ad-r' }, 'Role'), role, h('div', { class: 'hint' }, 'The read-only analyst can view and export but cannot publish courses or override completion.')), err,
+    h('p', { class: 'hint' }, 'Credentials: ', h('b', { class: 'mono' }, ADMIN_USER), ' / ', h('b', { class: 'mono' }, ADMIN_CODE)), h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'submit' }, 'Sign in'), btn('Back to home', '', function () { go('landing'); })))), footer()];
 }
 var ATABS = [['dash', 'Dashboard'], ['users', 'Students'], ['progress', 'Progress'], ['courses', 'Courses'], ['audit', 'Audit log']];
 function renderAdminShell(app, sticky) {
-  sticky.appendChild(h('div', { class: 'topbar' }, brand(function () { ui.adminTab = 'dash'; renderAdminBody(); }), h('span', { class: 'chip' }, 'Admin portal — demo'), h('span', { style: 'flex:1' }), h('span', { class: 'small hide-sm', style: 'color:#cfd6e6' }, S.session.role), themeBtn(), h('button', { class: 'btn', onclick: logout }, icon('logout'), 'Logout')));
+  sticky.appendChild(h('div', { class: 'topbar' }, brand(function () { ui.adminTab = 'dash'; renderAdminBody(); }), h('span', { class: 'chip' }, 'Admin portal'), h('span', { style: 'flex:1' }), h('span', { class: 'small hide-sm', style: 'color:#cfd6e6' }, S.session.role), themeBtn(), h('button', { class: 'btn', onclick: logout }, icon('logout'), 'Logout')));
   app.appendChild(h('main', { id: 'main', class: 'adminmain', tabindex: '-1' })); setHdr(); renderAdminBody();
 }
 function renderAdminBody() {
   var m = $('#main'); if (!m) return; var fn = { dash: aDash, users: aUsers, progress: aProgress, courses: aCourses, audit: aAudit }[ui.adminTab] || aDash, out;
   try { out = fn(); } catch (e) { out = callout('err', 'This page could not be displayed: ' + e.message); }
   var tabs = h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Admin sections' }, ATABS.map(function (x) { return h('button', { role: 'tab', 'aria-selected': String(ui.adminTab === x[0]), onclick: function () { ui.adminTab = x[0]; renderAdminBody(); } }, x[1]); }));
-  m.replaceChildren.apply(m, flat([callout('info', 'DEMO ADMIN PORTAL — shows only the learner account stored in this browser. There are no sample students, and nothing is sent to a server.'), tabs].concat(out))); document.title = 'Admin — CloudLab Free';
+  m.replaceChildren.apply(m, flat([callout('info', 'ADMIN PORTAL — shows only the learner account stored in this browser. There are no sample students, and nothing is sent to a server.'), tabs].concat(out))); document.title = 'Admin — CloudLab Free';
 }
 function aDash() {
   var st = cohortAll(), now = Date.now(), active = st.filter(function (s) { return now - new Date(s.last) < 14 * 86400000; }).length, enrolled = st.filter(function (s) { return Object.keys(s.enr).length; }).length, inprog = 0, comp = 0, labsDone = 0;
@@ -1866,8 +2021,8 @@ function aDash() {
   var recent = st.slice().sort(function (a, b) { return new Date(b.reg) - new Date(a.reg); }).slice(0, 5), act = st.slice().sort(function (a, b) { return new Date(b.last) - new Date(a.last); }).slice(0, 5);
   return [h('div', { class: 'grid', style: 'grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:16px' }, [['Registered students', st.length], ['Active (14 days)', active], ['Enrolled learners', enrolled], ['Courses in progress', inprog], ['Courses completed', comp], ['Labs passed (total)', labsDone]].map(function (x) { return h('div', { class: 'card stat' }, h('span', { class: 'l' }, x[0]), h('span', { class: 'v' }, String(x[1]))); })),
     h('div', { class: 'grid g2' }, h('div', { class: 'card chartbox' }, h('h2', null, 'Completion rate by course (%)'), rateChart(rates), h('p', { class: 'muted small' }, rates.map(function (r) { return r.label + ' ' + r.c.title + ' (' + r.en + ' enrolled)'; }).join(' · '))),
-      h('div', { class: 'card' }, h('h2', null, 'System alerts'), h('ul', { class: 'feed' }, [S.notes.some(function (n) { return !n.read; }) ? 'Unread learner notifications exist (simulated).' : 'No unread learner notifications.', COURSES.filter(function (c) { return !isPub(c); }).length + ' unpublished course(s).', 'This portal is a front-end demo: no server-side permissions are enforced.'].map(function (t) { return h('li', null, t); })))),
-    h('div', { class: 'grid g2', style: 'margin-top:16px' }, h('div', { class: 'card' }, h('h2', null, 'Recent registrations'), recent.length ? h('ul', { class: 'feed' }, recent.map(function (s) { return h('li', null, s.name, h('div', { class: 'muted small' }, fmtDate(s.reg))); })) : h('p', { class: 'muted' }, 'No registered students yet. Create a demo account from the public signup page.')), h('div', { class: 'card' }, h('h2', null, 'Recent learner activity'), act.length ? h('ul', { class: 'feed' }, act.map(function (s) { return h('li', null, s.name, h('div', { class: 'muted small' }, 'Last active ' + fmtDate(s.last))); })) : h('p', { class: 'muted' }, 'No learner activity yet.')))];
+      h('div', { class: 'card' }, h('h2', null, 'System alerts'), h('ul', { class: 'feed' }, [S.notes.some(function (n) { return !n.read; }) ? 'Unread learner notifications exist (simulated).' : 'No unread learner notifications.', COURSES.filter(function (c) { return !isPub(c); }).length + ' unpublished course(s).', 'Manage learners, courses and progress.'].map(function (t) { return h('li', null, t); })))),
+    h('div', { class: 'grid g2', style: 'margin-top:16px' }, h('div', { class: 'card' }, h('h2', null, 'Recent registrations'), recent.length ? h('ul', { class: 'feed' }, recent.map(function (s) { return h('li', null, s.name, h('div', { class: 'muted small' }, fmtDate(s.reg))); })) : h('p', { class: 'muted' }, 'No registered students yet. Create an account from the public signup page.')), h('div', { class: 'card' }, h('h2', null, 'Recent learner activity'), act.length ? h('ul', { class: 'feed' }, act.map(function (s) { return h('li', null, s.name, h('div', { class: 'muted small' }, 'Last active ' + fmtDate(s.last))); })) : h('p', { class: 'muted' }, 'No learner activity yet.')))];
 }
 function rateChart(items) {
   var W = 320, H = 150, P = 30, s = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Completion rate: ' + items.map(function (i) { return i.label + ' ' + i.value + '%'; }).join(', ') }), bw = (W - P - 6) / items.length;
@@ -1890,7 +2045,7 @@ function aUsers() {
 function studentDetail(s) {
   var rows = COURSES.map(function (c) { var r = sCourse(s, c.id); return { c: c, r: r }; });
   openModal({ title: s.name, wide: true, body: [h('p', { class: 'muted' }, s.email + ' · registered ' + fmtDate(s.reg) + ' · last active ' + fmtDate(s.last)), table([{ label: 'Course', render: function (x) { return x.c.title; } }, { label: 'Status', render: function (x) { return badge(x.r.st === 'Completed' ? 'Successful' : x.r.st === 'In progress' ? 'Pending' : 'Stopped', x.r.st + (x.r.ov ? ' (override)' : '')); } }, { label: 'Progress', render: function (x) { return x.r.pct + '%'; } }, { label: 'Lessons', render: function (x) { return x.r.ls + '/' + x.c.lessons.length; } }, { label: 'Labs', render: function (x) { return x.r.lb + '/' + x.c.labs.length; } }, { label: 'Quiz', render: function (x) { return x.r.q == null ? '—' : x.r.q + '%'; } }, { label: 'Completed', render: function (x) { return x.r.at ? fmtDate(x.r.at) : '—'; } },
-      { label: 'Action', render: function (x) { return x.r.st === 'Completed' ? '—' : btn('Override', 'sm', function () { overrideForm(s, x.c); }, { disabled: !canWrite() }); } }], rows, 'Student course progress'), canWrite() ? null : callout('warn', 'Your demo role is read-only, so completion overrides are disabled.')], actions: [{ label: 'Close', cls: 'primary' }] });
+      { label: 'Action', render: function (x) { return x.r.st === 'Completed' ? '—' : btn('Override', 'sm', function () { overrideForm(s, x.c); }, { disabled: !canWrite() }); } }], rows, 'Student course progress'), canWrite() ? null : callout('warn', 'Your role is read-only, so completion overrides are disabled.')], actions: [{ label: 'Close', cls: 'primary' }] });
 }
 function overrideForm(s, c) {
   if (!canWrite()) { toast('Your role cannot override completion.', 'warn'); return; }
@@ -1902,7 +2057,7 @@ function aProgress() {
   var all = cohortAll(), cid = ui.acourse, c = cid === 'ALL' ? null : cById(cid), host = h('div', { class: 'card' });
   function rowsFor() { var out = []; all.forEach(function (s) { COURSES.forEach(function (k) { if (c && k.id !== c.id) return; var r = sCourse(s, k.id); if (r.st === 'Not enrolled') return; if (ui.apst !== 'ALL' && (ui.apst === 'Completed') !== (r.st === 'Completed')) return; out.push({ s: s, k: k, r: r }); }); }); return out; }
   function list() { var rows = rowsFor(); host.replaceChildren(rows.length ? table([{ label: 'Student', render: function (x) { return x.s.name; } }, { label: 'Course', render: function (x) { return x.k.title; } }, { label: 'Status', render: function (x) { return x.r.st + (x.r.ov ? ' (override)' : ''); } }, { label: 'Progress', render: function (x) { return x.r.pct + '%'; } }, { label: 'Labs', render: function (x) { return x.r.lb + '/' + x.k.labs.length; } }, { label: 'Quiz', render: function (x) { return x.r.q == null ? '—' : x.r.q + '%'; } }, { label: 'Completed', render: function (x) { return x.r.at ? fmtDate(x.r.at) : '—'; } }], rows, 'Course progress') : emptyState('No matching records', 'Try another course or status.')); }
-  function exportCsv() { var rows = rowsFor(); if (!rows.length) { toast('Nothing to export for these filters.', 'warn'); return; } aLog('CSV export', rows.length + ' rows, course filter ' + cid); save(); var head = ['Student', 'Email', 'Course', 'Status', 'Progress %', 'Lessons', 'Labs', 'Quiz %', 'Completed on', 'Override reason']; downloadText('cloudlab-demo-progress.csv', [head].concat(rows.map(function (x) { return [x.s.name, x.s.email, x.k.title, x.r.st, x.r.pct, x.r.ls, x.r.lb, x.r.q == null ? '' : x.r.q, x.r.at ? x.r.at.slice(0, 10) : '', x.r.ov ? x.r.ov.reason : '']; }).map(function (r) { return r.map(csvCell).join(','); })).join('\r\n'), 'text/csv'); }
+  function exportCsv() { var rows = rowsFor(); if (!rows.length) { toast('Nothing to export for these filters.', 'warn'); return; } aLog('CSV export', rows.length + ' rows, course filter ' + cid); save(); var head = ['Student', 'Email', 'Course', 'Status', 'Progress %', 'Lessons', 'Labs', 'Quiz %', 'Completed on', 'Override reason']; downloadText('cloudlab-progress.csv', [head].concat(rows.map(function (x) { return [x.s.name, x.s.email, x.k.title, x.r.st, x.r.pct, x.r.ls, x.r.lb, x.r.q == null ? '' : x.r.q, x.r.at ? x.r.at.slice(0, 10) : '', x.r.ov ? x.r.ov.reason : '']; }).map(function (r) { return r.map(csvCell).join(','); })).join('\r\n'), 'text/csv'); }
   var cmp = COURSES.map(function (k) { var en = all.filter(function (s) { return sCourse(s, k.id).st !== 'Not enrolled'; }); return { label: k.id.toUpperCase(), value: en.length ? Math.round(en.reduce(function (a, s) { return a + sCourse(s, k.id).pct; }, 0) / en.length) : 0 }; });
   var out = [h('div', { class: 'toolbar' }, select([{ v: 'ALL', l: 'All courses' }].concat(COURSES.map(function (k) { return { v: k.id, l: k.title }; })), ui.acourse, { 'aria-label': 'Course filter', onchange: function (e) { ui.acourse = e.target.value; list(); } }), select([{ v: 'ALL', l: 'Completed and incomplete' }, { v: 'Completed', l: 'Completed only' }, { v: 'Incomplete', l: 'Incomplete only' }], ui.apst, { 'aria-label': 'Completion filter', onchange: function (e) { ui.apst = e.target.value; list(); } }), btn('Export CSV', 'primary', exportCsv)), h('div', { class: 'card chartbox', style: 'margin-bottom:16px' }, h('h2', null, 'Average progress by course (%)'), rateChart(cmp)), host];
   list(); return out;
